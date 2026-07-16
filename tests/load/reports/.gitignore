@@ -1,0 +1,3 @@
+# Keep benchmark outputs out of git by default; linked reports are CI artifacts.
+*
+!.gitkeep

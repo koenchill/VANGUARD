@@ -1,0 +1,37 @@
+# Full-stack synthetic mission scenario — staging namespace release gate (Section 9).
+scenario_version: "1.0.0"
+namespace: staging
+mission_id: mission-alpha
+
+steps:
+  - id: ingest_sample
+    action: bulk_onboarding
+    dataset_version: bulk-bulk-001
+  - id: validate_landed
+    action: assert_curation_stage
+    expect: landed
+  - id: run_dbt_marts
+    action: dbt_run
+    select: "marts.reporting"
+  - id: agent_coa
+    action: orchestration_coa_graph
+    require_hitl: true
+  - id: eval_gate
+    action: g010_eval
+    contract: mission-alpha
+    expect_pass: true
+  - id: bi_rls_check
+    action: dual_path_rls
+    expect_distinct_row_counts: true
+  - id: load_smoke
+    action: k6_manifest
+    manifest: tests/load/workload-manifest.yaml
+    duration_override_seconds: 60
+
+pass_criteria:
+  - all_steps_ok
+  - g010_contract_identity_recorded
+  - g011_report_linked_to_dataset_and_code
+  - no_silent_hitl_bypass
+
+assurance: Local/portfolio runnable; Cloud-Integration against live staging namespace tracked in Section 15.

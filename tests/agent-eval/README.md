@@ -1,3 +1,4 @@
 # tests/agent-eval/
 
-Ragas + TruLens harness consuming versioned evaluation contracts with seeded fixtures proving deterministic pass/fail (G-010).
+Ragas + TruLens-family metrics consumed through versioned G-010 contracts.
+Seeded positive/negative fixtures must produce the same pass/fail every run.

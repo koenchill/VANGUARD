@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 11 — CI/CD + supply chain** (complete on `dev`): SHA-pinned Actions (G-019), SBOM/cosign, disposable-target ZAP DAST (G-015), planted-fixture gate dry-run, runner network deny-list for prod hosts.
+**Phase 12 — Test suite** (complete on `dev`): G-010 versioned eval contracts + deterministic agent-eval harness; G-011 workload-manifest + K6 + linked benchmark reports; chaos HITL fallback; staging production-simulation scenario.
 
-Next: **Phase 12** — Test suite completion (G-010 eval contracts, G-011 K6 workload).
+Next: **Phase 13** — Backup/DR + audit system (G-006, G-018).
 
 ## Quick facts
 

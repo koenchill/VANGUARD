@@ -1,0 +1,57 @@
+contract_version: "1.0.0"
+mission_id: mission-bravo
+data_class: SECRET
+description: Secondary mission contract — distinct thresholds for higher classification.
+
+metrics:
+  faithfulness:
+    formula: ragas.faithfulness
+    direction: maximize
+    threshold: 0.90
+    blocking: true
+  answer_relevancy:
+    formula: ragas.answer_relevancy
+    direction: maximize
+    threshold: 0.85
+    blocking: true
+  hallucination_rate:
+    formula: trulens.hallucination_rate
+    direction: minimize
+    threshold: 0.05
+    blocking: true
+  task_completion:
+    formula: vanguard.task_completion
+    direction: maximize
+    threshold: 0.95
+    blocking: true
+
+golden_set:
+  provenance: "synthetic curated SECRET-class sample"
+  dataset_version: "bulk-bulk-100"
+  lakefs_commit_id: "lakefs:mission-bravo@cafebabe"
+  min_sample_size: 6
+  path: tests/agent-eval/fixtures/mission-bravo-golden.jsonl
+
+confidence_interval:
+  method: bootstrap
+  level: 0.95
+  bootstrap_samples: 200
+
+seed_protocol:
+  repeats: 5
+  seeds: [201, 202, 203, 204, 205]
+
+judge_model:
+  provider: private-vpc
+  name: mission-judge-llm
+  version: "2026.07.1"
+  digest: "sha256:judge-model-pin-placeholder"
+
+failure_budget:
+  max_blocking_failures: 0
+  max_nonblocking_failures: 0
+
+rerun_policy:
+  on_infra_flake: retry_once
+  on_metric_fail: do_not_rerun_without_contract_bump
+  invalidate_prior_results_on_contract_change: true

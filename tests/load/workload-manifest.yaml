@@ -1,0 +1,75 @@
+# G-011 executable performance contract — K6 executes against this manifest.
+# A green run unrelated to this file does not count as passing.
+
+manifest_version: "1.0.0"
+code_version_binding: required
+dataset_version_binding: required
+
+dataset:
+  provenance: "Section 4 onboarding sample (bulk-bulk-001 + ongoing cdc-200)"
+  dataset_version: "bulk-bulk-001"
+  lakefs_commit_id: "lakefs:mission-alpha@deadbeef"
+  row_file_size_distribution:
+    p50_bytes: 65536
+    p95_bytes: 1048576
+    p99_bytes: 8388608
+  partition_cardinality: 64
+  skew_profile: "zipf_1.2_mission_id"
+  representative_not_invented: true
+
+io_mix:
+  read_write_ratio: "95:5"
+  query_templates:
+    - id: curation_health
+      sql: "SELECT curation_stage, record_count FROM mission_marts.reporting.fct_curation_health"
+      weight: 0.35
+    - id: data_quality
+      sql: "SELECT ingest_day, avg_quality_score, drift_rate FROM mission_marts.reporting.fct_data_quality"
+      weight: 0.30
+    - id: security_posture
+      sql: "SELECT observe_day, sast_pass_rate, nist_ai_rmf_coverage_pct FROM mission_marts.reporting.fct_security_compliance"
+      weight: 0.20
+    - id: mission_eval
+      sql: "SELECT observe_day, task_completion_rate, faithfulness_score FROM mission_marts.reporting.fct_mission_agent_eval"
+      weight: 0.15
+  target:
+    engine: trino
+    catalog: mission_marts
+    schema: reporting
+    # Local/portfolio fallback endpoint for gateway readiness soak:
+    gateway_readyz: "http://localhost:8000/readyz"
+
+concurrency:
+  virtual_users: 50
+  ramp_up_seconds: 60
+
+cache:
+  cold_run: true
+  warm_run: true
+
+duration:
+  test_seconds: 600
+  soak_seconds: 300
+
+slos:
+  latency_p95_ms: 750
+  latency_p99_ms: 1500
+  error_budget_pct: 1.0
+
+karpenter:
+  scale_response_target_seconds: 120
+  trigger: queue_depth
+  nodepools: [pipeline-cpu, gateway-general]
+
+throughput:
+  iops_target: 3000
+  mbps_target: 400
+
+cost:
+  max_test_usd: 75
+  max_steady_state_usd_per_hour: 40
+  feeds: G-021
+
+k6:
+  script: tests/load/k6/marts_workload.js
+  report_dir: tests/load/reports

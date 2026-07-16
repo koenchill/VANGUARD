@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Mimic production-like Local evidence for VANGUARD (G-001 portfolio — not ATO).
+# Always bootstraps repo .venv first (Python 3.11+).
 #
 # Usage:
 #   ./scripts/mimic-prod.sh
@@ -11,5 +12,16 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 export PYTHONPATH="$ROOT"
 
-echo "VANGUARD mimic-prod → python tools/run_mimic_prod.py $*"
-exec python tools/run_mimic_prod.py "$@"
+FORCE=()
+PASSTHRU=()
+for arg in "$@"; do
+  if [[ "$arg" == "--force-venv" ]]; then
+    FORCE=(--force)
+  else
+    PASSTHRU+=("$arg")
+  fi
+done
+
+PY="$(./scripts/ensure-venv.sh "${FORCE[@]}")"
+echo "VANGUARD mimic-prod → $PY tools/run_mimic_prod.py --skip-deps ${PASSTHRU[*]}"
+exec "$PY" tools/run_mimic_prod.py --skip-deps "${PASSTHRU[@]}"

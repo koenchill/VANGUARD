@@ -33,17 +33,23 @@ Build phases **0–14 complete**. See `docs/validation/go-no-go.md`.
 
 ## Mimic production locally
 
-Portfolio Local evidence that approximates CI + a live gateway (not a tenant ATO drill):
+Scripts bootstrap a repo-local **`.venv`** (Python **3.11+**) before smoke / prod-sim:
 
 ```powershell
+.\scripts\ensure-venv.ps1
+.\scripts\run-smoke.ps1
+.\scripts\run-prod-simulation.ps1
 .\scripts\mimic-prod.ps1 -Quick
 ```
 
 ```bash
+./scripts/ensure-venv.sh
+./scripts/run-smoke.sh
+./scripts/run-prod-simulation.sh
 ./scripts/mimic-prod.sh --quick
 ```
 
-Details: `scripts/README.md`. Report: `docs/validation/mimic-prod-report.md`. Prefer Python **3.11** (CI version).
+Details: `scripts/README.md`. Report: `docs/validation/mimic-prod-report.md`.
 
 ## Quick facts
 

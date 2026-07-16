@@ -102,7 +102,10 @@ def stage_deps() -> dict:
     return StageResult.make(
         "deps",
         passed=ok,
-        detail="pip install -r tests/requirements.txt" + ("" if ok else f" rc={proc.returncode}"),
+        detail=(
+            f"pip install -r tests/requirements.txt into {sys.executable}"
+            + ("" if ok else f" rc={proc.returncode}")
+        ),
     )
 
 
@@ -313,7 +316,9 @@ def stage_load(*, skip: bool, quick: bool, gateway_up: bool) -> dict:
     )
 
 
-def stage_resilience() -> dict:
+def stage_resilience(*, skip: bool = False) -> dict:
+    if skip:
+        return StageResult.make("resilience", passed=True, skipped=True, detail="--skip-resilience")
     proc = _run(
         [
             sys.executable,
@@ -334,7 +339,9 @@ def stage_resilience() -> dict:
     )
 
 
-def stage_prod_sim() -> dict:
+def stage_prod_sim(*, skip: bool = False) -> dict:
+    if skip:
+        return StageResult.make("prod-sim", passed=True, skipped=True, detail="--skip-prod-sim")
     proc = _run(
         [
             sys.executable,
@@ -406,8 +413,8 @@ def _write_reports(results: list[dict], *, overall: bool) -> None:
             "## How to re-run",
             "",
             "```bash",
-            "python tools/run_mimic_prod.py",
-            "# or: scripts/mimic-prod.ps1   /   scripts/mimic-prod.sh",
+            "./scripts/ensure-venv.sh   # or .\\scripts\\ensure-venv.ps1",
+            "./scripts/mimic-prod.sh",
             "```",
             "",
         ]
@@ -420,6 +427,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--skip-deps", action="store_true")
     parser.add_argument("--skip-gateway", action="store_true", help="Skip Docker gateway smoke")
     parser.add_argument("--skip-k6", action="store_true", help="Skip live k6 load stage")
+    parser.add_argument("--skip-resilience", action="store_true", help="Skip chaos/security/eval")
+    parser.add_argument("--skip-prod-sim", action="store_true", help="Skip production-simulation")
     parser.add_argument("--skip-walkthrough", action="store_true", help="Skip Section 14 regen")
     parser.add_argument(
         "--quick",
@@ -462,8 +471,8 @@ def main(argv: list[str] | None = None) -> int:
 
         results.append(stage_security(gateway_up=gateway_up))
         results.append(stage_load(skip=args.skip_k6, quick=args.quick, gateway_up=gateway_up))
-        results.append(stage_resilience())
-        results.append(stage_prod_sim())
+        results.append(stage_resilience(skip=args.skip_resilience))
+        results.append(stage_prod_sim(skip=args.skip_prod_sim))
         results.append(stage_walkthrough(skip=args.skip_walkthrough))
 
         overall = all(r["passed"] for r in results)

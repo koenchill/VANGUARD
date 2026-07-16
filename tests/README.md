@@ -22,14 +22,12 @@ pip install -r tests/requirements.txt
 
 ## Mimic production (Local)
 
-Use the operator scripts (gateway container + full pyramid + optional k6):
+Operator scripts create/use **`.venv`** first, then run smoke / prod-sim:
 
 ```powershell
-.\scripts\mimic-prod.ps1 -Quick
-```
-
-```bash
-./scripts/mimic-prod.sh --quick
+.\scripts\ensure-venv.ps1
+.\scripts\run-smoke.ps1
+.\scripts\run-prod-simulation.ps1
 ```
 
 See `scripts/README.md`. Report: `docs/validation/mimic-prod-report.md`.

@@ -12,5 +12,6 @@ Repo-level build tooling (not application code):
 - `link_load_report.py` — bind K6 summaries to G-011 workload-manifest (dataset + code version)
 - `recovery_set.py` / `generate_recovery_manifest.py` — G-006 signed recovery-set manifests
 - `run_section14_walkthrough.py` — Phase 14 Local walkthrough runner → `docs/validation/`
+- `ensure_venv.py` — create repo `.venv` (prefer 3.11) + install `tests/requirements.txt`
 - `run_mimic_prod.py` — Local prod-mimicry orchestrator (gateway smoke + pyramid + optional k6) → `docs/validation/mimic-prod-report.*` (see `scripts/`)
 

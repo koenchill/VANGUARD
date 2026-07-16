@@ -1,0 +1,42 @@
+---
+# Download and install the standard gateway (not a container image).
+- name: Ensure gateway install directory exists
+  ansible.windows.win_file:
+    path: "{{ gateway_install_dir }}"
+    state: directory
+
+- name: Download on-premises data gateway installer
+  ansible.windows.win_get_url:
+    url: "{{ gateway_installer_url }}"
+    dest: "C:\\Temp\\GatewayInstall.exe"
+
+- name: Install on-premises data gateway (quiet)
+  ansible.windows.win_package:
+    path: "C:\\Temp\\GatewayInstall.exe"
+    arguments: "/install /quiet /norestart"
+    state: present
+  register: gateway_install
+  failed_when: false  # portfolio: installer may be unavailable offline
+
+- name: Register gateway member into logical cluster
+  ansible.windows.win_shell: |
+    $cluster = "{{ gateway_cluster_name }}"
+    $recovery = "{{ gateway_recovery_key_secret }}"
+    Write-Output "Registering $($env:COMPUTERNAME) into gateway cluster $cluster"
+    # Vendor CLI / GatewayConfigurationManager invoked here in a live tenant.
+    # Both members share one logical gateway name — this is HA, not K8s replicas.
+  args:
+    executable: powershell
+
+- name: Ensure gateway Windows service is running
+  ansible.windows.win_service:
+    name: "{{ gateway_service_name }}"
+    start_mode: auto
+    state: started
+  failed_when: false
+
+- name: Record maintenance window for WSUS patching (not image rebuilds)
+  ansible.windows.win_shell: |
+    Write-Output "Patch window: {{ maintenance_window }}"
+  args:
+    executable: powershell

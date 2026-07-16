@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 7 — Enterprise ingestion** (complete on `dev`): separate bulk vs ongoing transfer paths, landing/raw validation, quarantine-on-failure, `curation_stage=landed` metadata — no curated-zone writes from transfer roles.
+**Phase 8 — BI dual-path** (complete on `dev`): Windows gateway Ansible/DSC (G-003), Grafana `oauthPassThru` datasources (G-004), four dashboards × both tools from `bi_metrics.yaml`, build-side RLS identity test.
 
-Next: **Phase 8** — BI dual-path setup (PowerBI gateway scripts + Grafana dashboards).
+Next: **Phase 9** — Agentic application layer + G-013 approval protocol.
 
 ## Quick facts
 

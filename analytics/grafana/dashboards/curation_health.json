@@ -1,0 +1,132 @@
+{
+  "uid": "curation_health",
+  "title": "Curation Pipeline Health",
+  "tags": [
+    "mission-bi",
+    "vanguard",
+    "curation_health"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1h",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Records processed / day",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_curation_health /* metric:records_processed_per_day */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "PII-scrub rate",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_curation_health /* metric:pii_scrub_rate */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Dedup rate",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_curation_health /* metric:dedup_rate */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "HITL approval throughput",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_curation_health /* metric:hitl_approval_throughput */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Curation-stage funnel (raw \u2192 approved \u2192 rejected)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_curation_health /* metric:curation_stage_funnel */",
+          "format": "table"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "editable": false
+}

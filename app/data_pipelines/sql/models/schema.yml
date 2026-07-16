@@ -21,3 +21,11 @@ models:
     columns:
       - name: ingest_day
         tests: [not_null]
+  - name: fct_security_compliance
+    columns:
+      - name: observe_day
+        tests: [not_null]
+  - name: fct_mission_agent_eval
+    columns:
+      - name: observe_day
+        tests: [not_null]

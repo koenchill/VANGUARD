@@ -1,0 +1,110 @@
+{
+  "uid": "security_compliance",
+  "title": "Security & Compliance Posture",
+  "tags": [
+    "mission-bi",
+    "vanguard",
+    "security_compliance"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1h",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "SAST/SCA/DAST pass-rate trend",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_security_compliance /* metric:sast_sca_dast_pass_rate */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "STRIDE residual-risk summary",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_security_compliance /* metric:stride_residual_risk */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "NIST AI RMF control-coverage %",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_security_compliance /* metric:nist_ai_rmf_coverage */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Backup/DR restore-test pass rate",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_security_compliance /* metric:backup_dr_restore_pass_rate */",
+          "format": "table"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "editable": false
+}

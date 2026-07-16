@@ -1,0 +1,56 @@
+{
+  "format": "vanguard.pbix.json/v1",
+  "name": "curation_health",
+  "displayName": "Curation Pipeline Health",
+  "connectionMode": "DirectQuery",
+  "forbidImportMode": true,
+  "gatewayCluster": "vanguard-mission-gateway",
+  "identity": "kerberos_constrained_delegation",
+  "datasource": {
+    "engine": "trino",
+    "catalog": "mission_marts",
+    "schema": "reporting",
+    "relation": "fct_curation_health"
+  },
+  "pages": [
+    {
+      "name": "Overview",
+      "visuals": [
+        {
+          "id": "records_processed_per_day",
+          "title": "Records processed / day",
+          "type": "card",
+          "queryMetric": "records_processed_per_day"
+        },
+        {
+          "id": "pii_scrub_rate",
+          "title": "PII-scrub rate",
+          "type": "card",
+          "queryMetric": "pii_scrub_rate"
+        },
+        {
+          "id": "dedup_rate",
+          "title": "Dedup rate",
+          "type": "card",
+          "queryMetric": "dedup_rate"
+        },
+        {
+          "id": "hitl_approval_throughput",
+          "title": "HITL approval throughput",
+          "type": "card",
+          "queryMetric": "hitl_approval_throughput"
+        },
+        {
+          "id": "curation_stage_funnel",
+          "title": "Curation-stage funnel (raw \u2192 approved \u2192 rejected)",
+          "type": "funnel",
+          "queryMetric": "curation_stage_funnel"
+        }
+      ]
+    }
+  ],
+  "rls": {
+    "enforcedAt": "trino_opa",
+    "defenseInDepth": "powerbi_native_rls"
+  }
+}

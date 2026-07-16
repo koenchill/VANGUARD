@@ -1,0 +1,88 @@
+{
+  "uid": "data_quality_drift",
+  "title": "Data Quality & Drift",
+  "tags": [
+    "mission-bi",
+    "vanguard",
+    "data_quality_drift"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1h",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "quality_score trend",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_data_quality /* metric:quality_score_trend */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "drift_flag rate over time",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_data_quality /* metric:drift_flag_rate */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Drift breakdown by source_uri",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_data_quality /* metric:drift_by_source_uri */",
+          "format": "table"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "editable": false
+}

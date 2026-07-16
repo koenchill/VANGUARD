@@ -1,0 +1,132 @@
+{
+  "uid": "mission_agent_evaluation",
+  "title": "Mission / Agent Evaluation",
+  "tags": [
+    "mission-bi",
+    "vanguard",
+    "mission_agent_evaluation"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1h",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Task-completion rate",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_mission_agent_eval /* metric:task_completion_rate */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Hallucination / faithfulness scores",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_mission_agent_eval /* metric:faithfulness_score */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Cost-per-inference",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_mission_agent_eval /* metric:cost_per_inference */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Forward-deployed mission-scenario outcomes",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_mission_agent_eval /* metric:mission_scenario_outcomes */",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Per-agent-step telemetry",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "datasource": {
+        "type": "grafana-trino-datasource",
+        "uid": "MissionBI-Trino"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawSql": "SELECT * FROM mission_marts.reporting.fct_mission_agent_eval /* metric:per_agent_step_telemetry */",
+          "format": "table"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "editable": false
+}

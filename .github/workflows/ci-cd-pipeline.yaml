@@ -8,6 +8,7 @@ on:
     branches: [main, dev]
   pull_request:
     branches: [main, dev]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -67,14 +68,25 @@ jobs:
           python-version: "3.11"
       - name: Install test dependencies
         run: |
+          set -eux
           python -m pip install --upgrade pip
-          python -m pip install -r tests/requirements.txt
+          # Explicit pins (not only -r) so a bad requirements include cannot omit jsonschema.
+          python -m pip install \
+            "pytest==8.3.5" \
+            "PyYAML==6.0.2" \
+            "jsonschema==4.23.0" \
+            "SQLAlchemy==2.0.40" \
+            "cryptography==44.0.2" \
+            "fastapi==0.115.6" \
+            "uvicorn==0.34.0"
           python -c "import jsonschema, yaml, pytest; print('deps-ok', jsonschema.__file__)"
       - name: Install kubectl (kustomize build gate)
         run: |
-          curl -sSfL "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
-          chmod +x /usr/local/bin/kubectl
-          kubectl version --client
+          mkdir -p "$HOME/bin"
+          curl -sSfL "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -o "$HOME/bin/kubectl"
+          chmod +x "$HOME/bin/kubectl"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+          "$HOME/bin/kubectl" version --client
       - name: Run unit + integration gates
         env:
           PYTHONPATH: ${{ github.workspace }}

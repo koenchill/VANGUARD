@@ -88,10 +88,11 @@ jobs:
           chmod +x "$HOME/bin/kubectl"
           echo "$HOME/bin" >> "$GITHUB_PATH"
           "$HOME/bin/kubectl" version --client
-      - name: Run unit + integration gates
+      - name: Run unit+integration gates via python -m pytest
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
+          python -c "import jsonschema; print('pre-pytest jsonschema OK')"
           python -m pytest tests/unit tests/integration -q --tb=short
 
   build-and-dast:

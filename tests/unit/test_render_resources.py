@@ -10,6 +10,8 @@ from pathlib import Path
 import pytest
 import yaml
 
+pytest.importorskip("jsonschema")
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RENDERER = REPO_ROOT / "tools" / "render_resources.py"
 RESOURCES = REPO_ROOT / "infra" / "docker" / "resources"

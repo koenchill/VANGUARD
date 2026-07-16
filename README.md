@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 2 — Docker + resource contracts** (complete on `dev`): three `/opt/venv` Dockerfiles (UID 8888), `infra/docker/resources/` schema+contracts, and `tools/render_resources.py` (G-007, G-008).
+**Phase 3 — Terraform modules** (complete on `dev`): ten environment-agnostic modules under `infra/terraform/modules/` (vpc → observability), each `terraform validate`-clean with no env literals.
 
-Next: **Phase 3** — Terraform modules (bottom-up, no environment values).
+Next: **Phase 4** — environment roots + `app/*.tfvars.json` wiring (closes G-009).
 
 ## Quick facts
 

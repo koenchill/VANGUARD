@@ -108,11 +108,6 @@ variable "consolidate_after" {
   description = "Karpenter consolidation delay (e.g. 30m)."
 }
 
-variable "create_nodepools" {
-  type        = bool
-  description = "When true, apply karpenter.sh/v1 NodePool manifests via the Kubernetes provider."
-}
-
 variable "tags" {
   type        = map(string)
   description = "Additional tags."

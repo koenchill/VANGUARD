@@ -94,58 +94,6 @@ resource "aws_sqs_queue" "interruption" {
   tags                      = local.base_tags
 }
 
-resource "kubernetes_manifest" "nodepool" {
-  for_each = var.create_nodepools ? local.nodepools : {}
-
-  manifest = {
-    apiVersion = "karpenter.sh/v1"
-    kind       = "NodePool"
-    metadata = {
-      name = each.key
-    }
-    spec = {
-      template = {
-        metadata = {
-          labels = {
-            "workload-tier" = each.value.taint_value
-          }
-        }
-        spec = {
-          requirements = [
-            {
-              key      = "karpenter.sh/capacity-type"
-              operator = "In"
-              values   = each.value.capacity_types
-            },
-            {
-              key      = "karpenter.k8s.aws/instance-family"
-              operator = "In"
-              values   = each.value.families
-            },
-            {
-              key      = "kubernetes.io/arch"
-              operator = "In"
-              values   = [var.node_architecture]
-            }
-          ]
-          taints = [
-            {
-              key    = "workload-tier"
-              value  = each.value.taint_value
-              effect = "NoSchedule"
-            }
-          ]
-          nodeClassRef = {
-            group = "karpenter.k8s.aws"
-            kind  = "EC2NodeClass"
-            name  = each.key
-          }
-        }
-      }
-      disruption = {
-        consolidationPolicy = "WhenEmptyOrUnderutilized"
-        consolidateAfter    = var.consolidate_after
-      }
-    }
-  }
-}
+# karpenter.sh/v1 NodePool objects are emitted as structured output for Phase 5
+# GitOps manifests (infra/k8s/karpenter). Terraform owns IAM/SQS only here so the
+# root module does not require a live Kubernetes API during plan/apply.

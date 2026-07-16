@@ -14,6 +14,63 @@ output "interruption_queue_name" {
 }
 
 output "nodepool_names" {
-  description = "karpenter.sh/v1 NodePool names managed when create_nodepools is true."
+  description = "karpenter.sh/v1 NodePool names (mutually exclusive workload pools)."
   value       = keys(local.nodepools)
+}
+
+output "nodepool_specs" {
+  description = "Structured NodePool specs for Phase 5 GitOps rendering (karpenter.sh/v1)."
+  value = {
+    for name, cfg in local.nodepools : name => {
+      apiVersion = "karpenter.sh/v1"
+      kind       = "NodePool"
+      metadata = {
+        name = name
+      }
+      spec = {
+        template = {
+          metadata = {
+            labels = {
+              "workload-tier" = cfg.taint_value
+            }
+          }
+          spec = {
+            requirements = [
+              {
+                key      = "karpenter.sh/capacity-type"
+                operator = "In"
+                values   = cfg.capacity_types
+              },
+              {
+                key      = "karpenter.k8s.aws/instance-family"
+                operator = "In"
+                values   = cfg.families
+              },
+              {
+                key      = "kubernetes.io/arch"
+                operator = "In"
+                values   = [var.node_architecture]
+              }
+            ]
+            taints = [
+              {
+                key    = "workload-tier"
+                value  = cfg.taint_value
+                effect = "NoSchedule"
+              }
+            ]
+            nodeClassRef = {
+              group = "karpenter.k8s.aws"
+              kind  = "EC2NodeClass"
+              name  = name
+            }
+          }
+        }
+        disruption = {
+          consolidationPolicy = "WhenEmptyOrUnderutilized"
+          consolidateAfter    = var.consolidate_after
+        }
+      }
+    }
+  }
 }

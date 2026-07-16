@@ -41,6 +41,8 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 .terraform.lock.hcl
+infra/terraform/environments/**/terraform.tfstate
+infra/terraform/environments/**/.terraform.lock.hcl
 
 # Secrets / local credentials
 *.pem

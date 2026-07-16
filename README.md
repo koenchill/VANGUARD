@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 3 — Terraform modules** (complete on `dev`): ten environment-agnostic modules under `infra/terraform/modules/` (vpc → observability), each `terraform validate`-clean with no env literals.
+**Phase 4 — Terraform wiring + tfvars** (complete on `dev`): `environments/{dev,prod}` wire all modules; `app/dev.tfvars.json` + `app/prod.tfvars.json` only; separation CI gate (closes G-009). Toolchain: **Terraform 1.15.8** (windows_amd64).
 
-Next: **Phase 4** — environment roots + `app/*.tfvars.json` wiring (closes G-009).
+Next: **Phase 5** — Kubernetes manifests generated from Phase 2 resource contracts.
 
 ## Quick facts
 

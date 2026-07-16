@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 10 — Security artifacts** (complete on `dev`): 10 STRIDE worksheets with DFDs, ATT&CK/ATLAS playbooks (incl. AML.M0015 + AML.T0043), OPA Trino RLS, Kyverno deny privileged/root, G-012 model-boundary ADR, NIST AI RMF GRC + audit schema.
+**Phase 11 — CI/CD + supply chain** (complete on `dev`): SHA-pinned Actions (G-019), SBOM/cosign, disposable-target ZAP DAST (G-015), planted-fixture gate dry-run, runner network deny-list for prod hosts.
 
-Next: **Phase 11** — CI/CD + supply chain (SHA-pinned Actions, SBOM/cosign, real DAST).
+Next: **Phase 12** — Test suite completion (G-010 eval contracts, G-011 K6 workload).
 
 ## Quick facts
 

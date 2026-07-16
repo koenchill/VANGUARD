@@ -1,0 +1,18 @@
+# Finding policy — versioned fail criteria for Semgrep/Trivy/ZAP (G-015).
+version: "2026.07"
+fail_on:
+  sast:
+    severities: [ERROR, CRITICAL, HIGH]
+  sca:
+    severities: [CRITICAL, HIGH]
+  dast:
+    severities: [High, Critical]
+    require_live_target: true
+    forbid_hosts:
+      - api.vanguard.prod
+      - gateway.vanguard.prod
+      - trino.prod.internal
+ignore:
+  # Planted fixtures are intentional positives for gate dry-runs — excluded from merge scan roots.
+  paths:
+    - security/sast-sca-dast/fixtures/planted/**

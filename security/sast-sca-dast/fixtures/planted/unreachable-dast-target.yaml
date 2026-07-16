@@ -1,0 +1,11 @@
+# Planted fixture — MUST fail G-015 localhost DAST target check.
+name: planted-bad-dast
+on: workflow_dispatch
+jobs:
+  bad-dast:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ZAP against production (forbidden)
+        uses: zaproxy/action-api-scan@32933216f5785fc072927c7d24f47c5a2076f1ec
+        with:
+          target: "https://api.vanguard.prod/openapi.json"

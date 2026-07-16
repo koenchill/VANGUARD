@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 9 — Agentic app + HITL** (complete on `dev`): supervisor/tools, LangGraph-style COA graph, RAG+Milvus HNSW, Kong policies, telemetry, G-022 COA sim, and G-013 approval protocol (all attack suite cases fail closed).
+**Phase 10 — Security artifacts** (complete on `dev`): 10 STRIDE worksheets with DFDs, ATT&CK/ATLAS playbooks (incl. AML.M0015 + AML.T0043), OPA Trino RLS, Kyverno deny privileged/root, G-012 model-boundary ADR, NIST AI RMF GRC + audit schema.
 
-Next: **Phase 10** — Security artifacts (STRIDE, MITRE/ATLAS, OPA/Kyverno, GRC).
+Next: **Phase 11** — CI/CD + supply chain (SHA-pinned Actions, SBOM/cosign, real DAST).
 
 ## Quick facts
 

@@ -182,3 +182,38 @@ spec:
     ports:
     - protocol: TCP
       port: 8000
+---
+# Incident containment — isolate suspect agent pods (AML.M0015 playbook).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: agent-quarantine
+  namespace: agentic-app
+  labels:
+    app.kubernetes.io/part-of: vanguard
+    vanguard.io/playbook: aml-m0015
+spec:
+  podSelector:
+    matchLabels:
+      vanguard.io/quarantine: "true"
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: observability
+    ports:
+    - protocol: TCP
+      port: 9090
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53

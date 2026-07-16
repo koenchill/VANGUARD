@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vanguard.local/security/grc/audit-schema.json",
+  "title": "VANGUARD Evidence-Grade Audit Event (G-018)",
+  "type": "object",
+  "required": [
+    "event_id",
+    "event_type",
+    "occurred_at",
+    "actor",
+    "integrity"
+  ],
+  "properties": {
+    "event_id": { "type": "string", "format": "uuid" },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "opa_decision",
+        "g013_approval",
+        "tool_call",
+        "model_request",
+        "data_version_ref",
+        "admin_change",
+        "identity_assertion"
+      ]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trusted time source — not client-supplied"
+    },
+    "actor": {
+      "type": "object",
+      "required": ["principal", "tenant"],
+      "properties": {
+        "principal": { "type": "string" },
+        "tenant": { "type": "string" },
+        "mission_id": { "type": "string" }
+      }
+    },
+    "opa_decision": {
+      "type": "object",
+      "properties": {
+        "allow": { "type": "boolean" },
+        "policy_package": { "type": "string" },
+        "input_digest": { "type": "string" }
+      }
+    },
+    "g013_approval": {
+      "type": "object",
+      "properties": {
+        "nonce": { "type": "string" },
+        "digest_hex": { "type": "string" },
+        "key_id": { "type": "string" }
+      }
+    },
+    "tool_call": {
+      "type": "object",
+      "properties": {
+        "tool_name": { "type": "string" },
+        "resource_scope": { "type": "string" }
+      }
+    },
+    "model_request": {
+      "type": "object",
+      "properties": {
+        "egress_destination": { "type": "string" },
+        "classification": { "type": "string" },
+        "dataset_version": { "type": "string" }
+      }
+    },
+    "data_version_ref": {
+      "type": "object",
+      "properties": {
+        "dataset_version": { "type": "string" },
+        "lakefs_commit_id": { "type": "string" }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "required": ["prev_hash", "event_hash"],
+      "properties": {
+        "prev_hash": { "type": "string" },
+        "event_hash": { "type": "string" },
+        "destination": {
+          "type": "string",
+          "enum": ["s3_object_lock_worm", "opensearch_query_replica"]
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

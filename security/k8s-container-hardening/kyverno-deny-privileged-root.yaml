@@ -1,0 +1,55 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: forbid-privileged-pods
+  annotations:
+    policies.kyverno.io/title: Forbid privileged pods
+    policies.kyverno.io/category: Pod Security
+    policies.kyverno.io/severity: high
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: deny-privileged
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+      validate:
+        message: "privileged pods are forbidden (VANGUARD Phase 10 / G-017)"
+        pattern:
+          spec:
+            =(securityContext):
+              =(privileged): "false"
+            containers:
+              - =(securityContext):
+                  =(privileged): "false"
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: forbid-root-containers
+  annotations:
+    policies.kyverno.io/title: Forbid root containers
+    policies.kyverno.io/category: Pod Security
+    policies.kyverno.io/severity: high
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-non-root
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+      validate:
+        message: "containers must run as non-root UID (image contract UID 8888)"
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 8888
+            containers:
+              - securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 8888

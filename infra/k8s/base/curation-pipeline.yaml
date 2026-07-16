@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: curation-pipeline
+  namespace: data-pipeline
+  labels:
+    app: curation-pipeline
+    workload: pipeline
+    app.kubernetes.io/part-of: vanguard
+  annotations:
+    vanguard.ai/resource-contract: infra/docker/resources/pipeline.yaml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: curation-pipeline
+  template:
+    metadata:
+      labels:
+        app: curation-pipeline
+        workload: pipeline
+        workload-tier: pipeline-cpu
+    spec:
+      nodeSelector:
+        karpenter.sh/nodepool: pipeline-cpu
+      tolerations:
+      - key: workload-tier
+        operator: Equal
+        value: pipeline-cpu
+        effect: NoSchedule
+      containers:
+      - name: curation-pipeline
+        image: vanguard/pipeline:phase2
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 8888
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+        resources:
+          requests:
+            cpu: 4000m
+            memory: 16Gi
+            ephemeral-storage: 50Gi
+          limits:
+            cpu: 16000m
+            memory: 64Gi
+            ephemeral-storage: 50Gi
+        env:
+        - name: VANGUARD_WORKLOAD
+          value: pipeline
+        command:
+        - python
+        - -m
+        - app.data_pipelines

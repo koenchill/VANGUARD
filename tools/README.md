@@ -1,3 +1,8 @@
 # tools/
 
-Repo-level build tooling that is neither application code nor Terraform. Houses the resource-contract renderer (`render_resources.py`, invoked as `python tools/render_resources.py`) that turns `infra/docker/resources/*.yaml` into Kubernetes and Karpenter fragments with content digests (G-007).
+Repo-level build tooling (not application code):
+
+- `render_resources.py` — Docker resource contracts → K8s/Karpenter fragments + digests (G-007)
+- `generate_k8s_manifests.py` — Phase 5 GitOps manifests from those contracts
+- `check_terraform_separation.py` — fails if `.tf` lands under `infra/terraform/app/` or modules gain env literals
+

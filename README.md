@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 4 — Terraform wiring + tfvars** (complete on `dev`): `environments/{dev,prod}` wire all modules; `app/dev.tfvars.json` + `app/prod.tfvars.json` only; separation CI gate (closes G-009). Toolchain: **Terraform 1.15.8** (windows_amd64).
+**Phase 5 — Kubernetes manifests** (complete on `dev`): contract-generated Deployments, `karpenter.sh/v1` NodePools, default-deny NetworkPolicies, Grafana MissionBI datasources (`oauthPassThru`), Kustomize overlays. No PowerBI gateway in K8s (G-003).
 
-Next: **Phase 5** — Kubernetes manifests generated from Phase 2 resource contracts.
+Next: **Phase 6** — Data & metadata layer (dbt, promotion controller, PgBouncer).
 
 ## Quick facts
 

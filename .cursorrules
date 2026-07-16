@@ -1,0 +1,47 @@
+# VANGUARD — Non-Negotiable Agent Constraints (Phase 0)
+
+These rules are hard requirements. Do not violate them in any session.
+
+## Folder separations
+
+1. `app/` never contains Terraform, Dockerfiles, or Kubernetes manifests.
+2. `infra/terraform/modules/` contains zero hardcoded environment values (no account IDs, regions, CIDRs, instance types, or bucket names as literals that should vary by environment).
+3. `infra/terraform/app/` contains ONLY `dev.tfvars.json` and `prod.tfvars.json` — no `.tf` files, ever, under any circumstance.
+
+## Technology baseline (fixed — G-002)
+
+Do not substitute alternatives unless explicitly told the baseline has changed:
+
+- Lake/table format: **Delta Lake** on S3
+- Curation engine: **Ray**
+- Versioning/lineage: **lakeFS** (Delta table history secondary)
+- Vector store: **Milvus** (clustered)
+- Query engine: **Trino only** — no generic multi-engine abstraction, no Athena/ClickHouse as baseline
+- BI hybrid gateway: **PowerBI standard gateway on Windows Server** (never as a container / never as an EKS workload)
+- GitOps: **ArgoCD**
+- SAST: **Semgrep**
+- Load testing: **K6**
+
+## Docker / containers (G-008)
+
+4. Every Dockerfile installs dependencies into `/opt/venv`, never `pip install --user` or root-owned paths under `/root`, because the runtime user is a non-root UID (8888) that cannot traverse `/root`.
+
+## Kubernetes / Karpenter (G-016)
+
+5. Karpenter manifests use `karpenter.sh/v1` (not `v1beta1`) and never mix GPU and CPU-optimized instance families in one NodePool.
+
+## Interface consistency
+
+6. Before creating any new file, check whether it is already referenced elsewhere in the repo (grep for the path). If so, that reference's exact variable names and structure are authoritative — do not invent a divergent interface.
+
+7. When a task references "Section N" of `VANGUARD-AI-Build-Prompt.md` (or `docs/` equivalents), read that section before implementing — it contains the exact schema, code, or manifest to follow.
+
+## Root hygiene
+
+8. Keep the repository root minimal: project docs/config only (`README.md`, `LICENSE`, `AGENTS.md`, `.cursorrules`, `.gitignore`, `.cursor/`). Application code lives under `app/`; infrastructure under `infra/`; security under `security/`; tests under `tests/`. Do not dump source, Terraform, or Dockerfiles at the repo root.
+
+## Architecture
+
+9. Follow Enterprise AI Architecture (12-layer mapping in Section 17) and the MVC-equivalent for `app/api/`: thin `routers/` (controller), `services/` + `agents/` (application logic), `models/`/`schemas/` + data pipelines (model). BI dashboards are the View layer under `analytics/`.
+
+10. Evidence levels matter: Design ≠ Local ≠ Cloud-Integration ≠ Mission. Do not claim Cloud-Integration or organizational gaps closed from Design/Local work alone.

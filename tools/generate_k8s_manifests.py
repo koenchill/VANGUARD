@@ -374,6 +374,7 @@ def render_kustomize() -> None:
         "ai-gateway.yaml",
         "inference-api.yaml",
         "curation-pipeline.yaml",
+        "pgbouncer.yaml",
     ]
     write(
         OUT_BASE / "kustomization.yaml",

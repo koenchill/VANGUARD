@@ -1,0 +1,11 @@
+vanguard_curation:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "./target/vanguard_dev.duckdb"
+      threads: 4
+    ci:
+      type: duckdb
+      path: ":memory:"
+      threads: 2

@@ -1,3 +1,4 @@
 # app/data_pipelines/sql/
 
-dbt project: curation transform models, dbt tests, incremental materializations, and the marts/reporting/ star-schema layer BI tools may query.
+dbt project for curation transforms, tests, incremental models, and `marts/reporting/`
+star-schema layer consumed by BI via Trino only.

@@ -1,3 +1,4 @@
 # app/data_pipelines/lineage/
 
-lakeFS dataset versioning hooks so any eval run or model artifact resolves to an exact, restorable dataset version.
+lakeFS integration hooks so any eval run or model artifact resolves to an exact, restorable
+dataset version (Section 0 baseline + Section 11 rollback).

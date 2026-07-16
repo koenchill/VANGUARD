@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg_dataset_records
+    columns:
+      - name: dataset_version
+        tests: [not_null]
+      - name: source_uri
+        tests: [not_null]
+      - name: curation_stage
+        tests: [not_null]
+  - name: curated_datasets
+    columns:
+      - name: dataset_version
+        tests: [unique, not_null]
+  - name: fct_curation_health
+    columns:
+      - name: curation_stage
+        tests: [not_null]
+  - name: fct_data_quality
+    columns:
+      - name: ingest_day
+        tests: [not_null]

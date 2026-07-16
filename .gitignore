@@ -55,11 +55,12 @@ secrets/
 .tmp/
 .cache/
 
-# Test / eval artifacts
-tests/**/output/
-tests/**/reports/
-*.sarif
-sbom.json
+# dbt
+app/data_pipelines/sql/target/
+app/data_pipelines/sql/dbt_packages/
+app/data_pipelines/sql/logs/
+*.duckdb
+
 
 # Cursor local (keep shared rules tracked)
 .cursor/*.log

@@ -6,3 +6,4 @@ resources:
 - ai-gateway.yaml
 - inference-api.yaml
 - curation-pipeline.yaml
+- pgbouncer.yaml

@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: curation_metadata
+    description: RDS curation metadata DB (Section 3)
+    schema: public
+    tables:
+      - name: dataset_records
+      - name: telemetry_events
+      - name: active_dataset_pointer

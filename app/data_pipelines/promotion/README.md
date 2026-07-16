@@ -1,3 +1,5 @@
 # app/data_pipelines/promotion/
 
-Staged promotion controller: build non-active artifacts, validate, atomically flip active_dataset_version, with compensating rollback (G-014).
+Staged promotion controller (G-014): stage non-active candidates, validate quality/lineage,
+atomically flip `active_dataset_pointer`, compensate/orphan on failure. Consumers resolve
+versions only through the active pointer.

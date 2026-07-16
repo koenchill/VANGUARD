@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 5 — Kubernetes manifests** (complete on `dev`): contract-generated Deployments, `karpenter.sh/v1` NodePools, default-deny NetworkPolicies, Grafana MissionBI datasources (`oauthPassThru`), Kustomize overlays. No PowerBI gateway in K8s (G-003).
+**Phase 6 — Data & metadata** (complete on `dev`): Alembic curation schema, dbt marts/reporting, lakeFS lineage hooks, G-014 atomic promotion controller + fault-injection tests, PgBouncer (transaction mode) on `gateway-general` (G-023).
 
-Next: **Phase 6** — Data & metadata layer (dbt, promotion controller, PgBouncer).
+Next: **Phase 7** — Enterprise data integration (bulk vs ongoing ingestion).
 
 ## Quick facts
 

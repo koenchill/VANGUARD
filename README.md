@@ -26,7 +26,9 @@ Application, infrastructure, security, tests, and docs are added in later phases
 
 ## Current build phase
 
-**Phase 0 — Agent constraints** (complete on `dev`). Next: Phase 1 — repository scaffolding per Section 1 tree.
+**Phase 1 — Repository scaffolding** (complete on `dev`): Section 1 directory tree with folder READMEs only — no Terraform, Dockerfiles, or application code yet.
+
+Next: **Phase 2** — Docker images and the resource-contract renderer (G-007, G-008).
 
 ## Quick facts
 

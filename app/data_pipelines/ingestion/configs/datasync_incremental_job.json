@@ -1,0 +1,7 @@
+{
+  "job_name": "vanguard-incremental-datasync",
+  "source_location_arn": "arn:aws-us-gov:datasync:us-gov-west-1:PLACEHOLDER:location/source",
+  "destination_bucket": "vanguard-mission-data-prod",
+  "schedule_expression": "cron(0 * * * ? *)",
+  "transfer_mode": "CHANGED"
+}

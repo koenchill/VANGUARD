@@ -1,0 +1,7 @@
+{
+  "job_name": "vanguard-cdc-mission-db",
+  "connector_class": "io.debezium.connector.postgresql.PostgresConnector",
+  "database_server_name": "mission-source",
+  "table_include_list": ["public.mission_events", "public.intel_reports"],
+  "landing_prefix": "landing/raw/"
+}

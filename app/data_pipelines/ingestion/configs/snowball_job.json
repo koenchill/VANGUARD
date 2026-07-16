@@ -1,0 +1,6 @@
+{
+  "job_name": "vanguard-snowball-onboarding",
+  "landing_bucket": "vanguard-mission-data-prod",
+  "landing_prefix": "landing/raw/",
+  "onboarding_window_days": 14
+}

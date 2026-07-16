@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 6 — Data & metadata** (complete on `dev`): Alembic curation schema, dbt marts/reporting, lakeFS lineage hooks, G-014 atomic promotion controller + fault-injection tests, PgBouncer (transaction mode) on `gateway-general` (G-023).
+**Phase 7 — Enterprise ingestion** (complete on `dev`): separate bulk vs ongoing transfer paths, landing/raw validation, quarantine-on-failure, `curation_stage=landed` metadata — no curated-zone writes from transfer roles.
 
-Next: **Phase 7** — Enterprise data integration (bulk vs ongoing ingestion).
+Next: **Phase 8** — BI dual-path setup (PowerBI gateway scripts + Grafana dashboards).
 
 ## Quick facts
 

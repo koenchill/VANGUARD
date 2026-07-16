@@ -1,3 +1,4 @@
 # backup-dr/weekly/
 
-Weekly full-snapshot policy definitions including lake manifest, vector index, model registry, and full metadata DB export.
+Weekly full backup policy (`policy.yaml`) — emits a signed recovery-set manifest; drives
+the monthly restore drill cadence.

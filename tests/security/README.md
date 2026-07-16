@@ -1,3 +1,3 @@
 # tests/security/
 
-Harness invocation for SAST/SCA/DAST CI gates and policy-rejection checks (privileged/root pods).
+Security-focused tests including G-018 audit integrity drills (tamper, deletion, replay).

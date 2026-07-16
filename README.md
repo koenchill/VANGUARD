@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 12 — Test suite** (complete on `dev`): G-010 versioned eval contracts + deterministic agent-eval harness; G-011 workload-manifest + K6 + linked benchmark reports; chaos HITL fallback; staging production-simulation scenario.
+**Phase 13 — Backup/DR + audit** (complete on `dev`): G-006 signed recovery-set manifests (stale-ref rejected), daily/weekly policies + DR runbooks; G-018 hash-chained WORM audit with tamper/deletion/replay drills and IAM role separation.
 
-Next: **Phase 13** — Backup/DR + audit system (G-006, G-018).
+Next: **Phase 14** — Full validation + gap-register reconciliation.
 
 ## Quick facts
 

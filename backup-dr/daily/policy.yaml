@@ -1,0 +1,17 @@
+# Daily backup policy (AWS Backup + Velero) — Section 8 / G-006.
+cadence: daily
+schedule: "cron(0 2 * * ? *)"
+retention_days: 14
+quiesce_strategy: delta_transaction_log_plus_rds_pitr_timestamp
+produces_recovery_set_manifest: true
+manifest_dir: backup-dr/manifests/
+components:
+  - delta_table_version
+  - rds_recovery_point
+  - velero_backup_id
+  - milvus_vector_checkpoint
+  - model_prompt_digest
+  - opa_policy_bundle_digest
+  - schema_migration_version
+cross_region_copy: true
+rpo_hours: 24

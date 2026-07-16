@@ -1,3 +1,3 @@
 # backup-dr/daily/
 
-AWS Backup daily incremental policy definitions for S3/EBS/EFS and coordination with Velero/RDS snapshots.
+Daily incremental backup policy (`policy.yaml`) — emits a signed recovery-set manifest.

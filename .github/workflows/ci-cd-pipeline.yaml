@@ -118,16 +118,21 @@ jobs:
         env:
           COSIGN_YES: "true"
         run: |
-          curl -sSfL https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64 -o /usr/local/bin/cosign
-          chmod +x /usr/local/bin/cosign
+          mkdir -p "$HOME/bin"
+          curl -sSfL https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64 -o "$HOME/bin/cosign"
+          chmod +x "$HOME/bin/cosign"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
           if [ -n "${{ secrets.COSIGN_KEY }}" ]; then
             echo "${{ secrets.COSIGN_KEY }}" > cosign.key
-            cosign sign --key cosign.key "${IMAGE_REF}"
-            cosign attest --predicate <(echo '{"build":"vanguard","sha":"${{ github.sha }}"}') --type spdx --key cosign.key "${IMAGE_REF}" || true
+            "$HOME/bin/cosign" sign --key cosign.key "${IMAGE_REF}"
+            "$HOME/bin/cosign" attest --predicate <(echo '{"build":"vanguard","sha":"${{ github.sha }}"}') --type spdx --key cosign.key "${IMAGE_REF}" || true
           else
             # Portfolio/local runners: keyless optional; presence of step is the G-019 control surface.
+            # Local builds have no RepoDigests until push — record image Id instead.
             echo "COSIGN_KEY unset — recording unsigned digest for Local evidence"
-            docker image inspect "${IMAGE_REF}" --format '{{index .RepoDigests 0}}{{.Id}}' > image-digest.txt
+            docker image inspect "${IMAGE_REF}" --format '{{.Id}}' > image-digest.txt
+            test -s image-digest.txt
+            cat image-digest.txt
           fi
 
       - name: Start disposable target with test-only credentials

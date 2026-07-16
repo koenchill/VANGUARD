@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 8 — BI dual-path** (complete on `dev`): Windows gateway Ansible/DSC (G-003), Grafana `oauthPassThru` datasources (G-004), four dashboards × both tools from `bi_metrics.yaml`, build-side RLS identity test.
+**Phase 9 — Agentic app + HITL** (complete on `dev`): supervisor/tools, LangGraph-style COA graph, RAG+Milvus HNSW, Kong policies, telemetry, G-022 COA sim, and G-013 approval protocol (all attack suite cases fail closed).
 
-Next: **Phase 9** — Agentic application layer + G-013 approval protocol.
+Next: **Phase 10** — Security artifacts (STRIDE, MITRE/ATLAS, OPA/Kyverno, GRC).
 
 ## Quick facts
 

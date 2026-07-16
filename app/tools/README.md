@@ -1,3 +1,4 @@
 # app/tools/
 
-Standalone tool implementations and least-privilege permission manifests consumed by agents and the orchestration layer.
+Standalone tool permission manifests (`manifests/*.yaml`) consumed by agents and
+orchestration. High-consequence tools declare `requires_hitl: true`.

@@ -68,12 +68,17 @@ jobs:
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pyyaml sqlalchemy cryptography fastapi uvicorn
+          pip install -r tests/requirements.txt
+      - name: Install kubectl (kustomize build gate)
+        run: |
+          curl -sSfL "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+          chmod +x /usr/local/bin/kubectl
+          kubectl version --client
       - name: Run unit + integration gates
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest tests/unit tests/integration -q --tb=short
+          python -m pytest tests/unit tests/integration -q --tb=short
 
   build-and-dast:
     needs: [security-scans, unit-tests]

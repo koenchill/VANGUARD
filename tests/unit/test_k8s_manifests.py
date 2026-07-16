@@ -77,6 +77,11 @@ def test_grafana_oauth_passthru() -> None:
 
 
 def test_kustomize_build_dev_and_prod() -> None:
+    kubectl = subprocess.run(["kubectl", "version", "--client"], capture_output=True)
+    if kubectl.returncode != 0:
+        import pytest
+
+        pytest.skip("kubectl not installed")
     for env in ("dev", "prod"):
         proc = subprocess.run(
             ["kubectl", "kustomize", str(REPO / "infra" / "k8s" / "overlays" / env)],

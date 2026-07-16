@@ -11,3 +11,11 @@ Production-mimicry test pyramid (Section 9):
 | Chaos | `tests/chaos/` | HITL fail-closed under injection |
 | Security | `tests/security/` + CI DAST | G-015 |
 | Production simulation | `tests/production-simulation/` | staging release gate |
+
+## Dependencies
+
+```bash
+pip install -r tests/requirements.txt
+```
+
+`tests/requirements.txt` pulls in `tools/requirements.txt` (`PyYAML` + `jsonschema`) because unit tests import `tools/render_resources.py`.

@@ -1,0 +1,50 @@
+{
+  "format": "vanguard.pbix.json/v1",
+  "name": "security_compliance",
+  "displayName": "Security & Compliance Posture",
+  "connectionMode": "DirectQuery",
+  "forbidImportMode": true,
+  "gatewayCluster": "vanguard-mission-gateway",
+  "identity": "kerberos_constrained_delegation",
+  "datasource": {
+    "engine": "trino",
+    "catalog": "mission_marts",
+    "schema": "reporting",
+    "relation": "fct_security_compliance"
+  },
+  "pages": [
+    {
+      "name": "Overview",
+      "visuals": [
+        {
+          "id": "sast_sca_dast_pass_rate",
+          "title": "SAST/SCA/DAST pass-rate trend",
+          "type": "card",
+          "queryMetric": "sast_sca_dast_pass_rate"
+        },
+        {
+          "id": "stride_residual_risk",
+          "title": "STRIDE residual-risk summary",
+          "type": "card",
+          "queryMetric": "stride_residual_risk"
+        },
+        {
+          "id": "nist_ai_rmf_coverage",
+          "title": "NIST AI RMF control-coverage %",
+          "type": "card",
+          "queryMetric": "nist_ai_rmf_coverage"
+        },
+        {
+          "id": "backup_dr_restore_pass_rate",
+          "title": "Backup/DR restore-test pass rate",
+          "type": "card",
+          "queryMetric": "backup_dr_restore_pass_rate"
+        }
+      ]
+    }
+  ],
+  "rls": {
+    "enforcedAt": "trino_opa",
+    "defenseInDepth": "powerbi_native_rls"
+  }
+}

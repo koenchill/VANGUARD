@@ -1,0 +1,8 @@
+{
+  "task_name": "vanguard-bulk-landing",
+  "source_location_arn": "arn:aws-us-gov:datasync:us-gov-west-1:PLACEHOLDER:location/source",
+  "destination_bucket": "vanguard-mission-data-prod",
+  "destination_subdirectory": "/landing/raw",
+  "verify_mode": "ONLY_FILES_TRANSFERRED",
+  "includes": ["**"]
+}

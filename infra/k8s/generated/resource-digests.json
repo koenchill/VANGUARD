@@ -1,0 +1,23 @@
+{
+  "gateway": {
+    "k8s_digest": "3614b985150e2902f177c424e110c62236900cd57a3405a6836a82cf27a2955a",
+    "karpenter_digest": "1fb3e83848bb3138f33bf8dc1089cc030c026c743ec1fa6268d5134f56b6e735",
+    "pair_digest": "91e4ddcf7d2d3740af298a328c90bb11ff62882b36fa41a78f67cd836dca9193",
+    "nodepool": "gateway-general",
+    "manifest": "infra/k8s/base/ai-gateway.yaml"
+  },
+  "inference": {
+    "k8s_digest": "e3733592fd357b0b6ec7e25b2ba3767d29b0bc483014906d3a80393028aae2c9",
+    "karpenter_digest": "9f26f9e20f34ede682958b7a778ba356b9d44467f7e862ff0cb0da0582d26078",
+    "pair_digest": "90c9e8866741fbc4d777b37589f67c129ae63ae1dbe5a37998b2ee1eabaa2253",
+    "nodepool": "inference-gpu",
+    "manifest": "infra/k8s/base/inference-api.yaml"
+  },
+  "pipeline": {
+    "k8s_digest": "e41c06a7cf7d5d8ffcad460e60e76619206e645e89827659c813b574d87b5881",
+    "karpenter_digest": "32861db97d50aa98eb2ee5c3ed2cb5b3e92331e231379bbc663c13c9b1a7f33e",
+    "pair_digest": "5412602aaa4670c13ae68ed9cccd0115026a2c3c0cef472bfa8799a1a159cdca",
+    "nodepool": "pipeline-cpu",
+    "manifest": "infra/k8s/base/curation-pipeline.yaml"
+  }
+}

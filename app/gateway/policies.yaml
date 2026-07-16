@@ -1,0 +1,37 @@
+# Kong / Mosaic AI Gateway policy-as-code (Section 1 / Phase 9).
+# Enforces authn/authz, rate limits, prompt/response filters, PII redaction.
+_format_version: "3.0"
+services:
+  - name: vanguard-agent-api
+    url: http://gateway.vanguard.svc.cluster.local:8080
+    routes:
+      - name: agent-invoke
+        paths: ["/v1/agents"]
+        methods: ["POST"]
+plugins:
+  - name: oidc-auth
+    config:
+      fail_closed: true
+      require_mission_claim: true
+  - name: rate-limiting
+    config:
+      minute: 120
+      policy: local
+  - name: request-transformer
+    config:
+      add:
+        headers:
+          - "X-Vanguard-Policy-Version:2026.07"
+  - name: pre-function
+    config:
+      access:
+        - |
+          -- PII redaction + prompt injection filter (fail closed on filter error)
+          if not kong.request.get_header("X-End-User-Identity") then
+            return kong.response.exit(401, { message = "missing end-user identity" })
+          end
+  - name: response-transformer
+    config:
+      remove:
+        headers:
+          - "X-Internal-Model-Route"

@@ -1,0 +1,60 @@
+contract_version: "1.0.0"
+mission_id: mission-alpha
+data_class: FOUO
+description: >
+  Versioned evaluation contract (G-010). Changing judge_model or any threshold
+  requires bumping contract_version and invalidates prior pass results.
+
+metrics:
+  faithfulness:
+    formula: ragas.faithfulness
+    direction: maximize
+    threshold: 0.85
+    blocking: true
+  answer_relevancy:
+    formula: ragas.answer_relevancy
+    direction: maximize
+    threshold: 0.80
+    blocking: true
+  hallucination_rate:
+    formula: trulens.hallucination_rate
+    direction: minimize
+    threshold: 0.10
+    blocking: true
+  task_completion:
+    formula: vanguard.task_completion
+    direction: maximize
+    threshold: 0.90
+    blocking: false
+
+golden_set:
+  provenance: "synthetic Phase 6 curated sample + Section 4 landing reconcile fixtures"
+  dataset_version: "bulk-bulk-001"
+  lakefs_commit_id: "lakefs:mission-alpha@deadbeef"
+  min_sample_size: 8
+  path: tests/agent-eval/fixtures/mission-alpha-golden.jsonl
+
+confidence_interval:
+  method: bootstrap
+  level: 0.95
+  bootstrap_samples: 200
+
+seed_protocol:
+  repeats: 5
+  seeds: [101, 102, 103, 104, 105]
+  note: "N=5 stochastic repeats; seeds pinned for determinism"
+
+judge_model:
+  provider: private-vpc
+  name: mission-judge-llm
+  version: "2026.07.1"
+  digest: "sha256:judge-model-pin-placeholder"
+
+failure_budget:
+  max_blocking_failures: 0
+  max_nonblocking_failures: 1
+
+rerun_policy:
+  on_infra_flake: retry_once
+  on_metric_fail: do_not_rerun_without_contract_bump
+  invalidate_prior_results_on_contract_change: true

@@ -1,0 +1,32 @@
+# Runner network policy — G-015 hard-block of production hostnames as DAST targets.
+# Enforced in CI via tools/check_cicd_gates.py and documented for self-hosted runners.
+apiVersion: vanguard.io/v1
+kind: RunnerNetworkPolicy
+metadata:
+  name: dast-egress-deny-prod
+spec:
+  applyToJobs:
+    - build-and-dast
+    - nightly-dast
+  allow:
+    - "127.0.0.1/32"
+    - "localhost"
+    - "github.com"
+    - "api.github.com"
+    - "*.githubusercontent.com"
+    - "ghcr.io"
+    - "registry.npmjs.org"
+    - "pypi.org"
+    - "files.pythonhosted.org"
+  deny:
+    - "api.vanguard.prod"
+    - "gateway.vanguard.prod"
+    - "trino.prod.internal"
+    - "powerbi.microsoft.com"
+    - "*.prod.vanguard.internal"
+  dast:
+    requireTargetHost:
+      - "localhost"
+      - "127.0.0.1"
+    requireReadyz: "http://localhost:8000/readyz"
+    requireOpenApi: "http://localhost:8000/openapi.json"

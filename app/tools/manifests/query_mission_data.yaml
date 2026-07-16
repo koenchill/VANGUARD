@@ -1,0 +1,6 @@
+tool_name: query_mission_data
+description: Read curated mission marts via Trino under caller identity
+allowed_resource_scopes:
+  - mission_marts.reporting.*
+requires_hitl: false
+sandbox: none

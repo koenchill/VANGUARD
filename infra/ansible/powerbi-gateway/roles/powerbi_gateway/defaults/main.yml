@@ -1,0 +1,3 @@
+---
+gateway_install_dir: "C:\\Program Files\\On-premises data gateway"
+gateway_service_name: "PBIEgwService"

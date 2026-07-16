@@ -1,0 +1,16 @@
+rules:
+  - id: vanguard.hardcoded-aws-key
+    message: Hardcoded AWS access key ID detected
+    severity: ERROR
+    languages: [python]
+    patterns:
+      - pattern-regex: 'AKIA[0-9A-Z]{16}'
+  - id: vanguard.hardcoded-password
+    message: Hardcoded password assignment detected
+    severity: ERROR
+    languages: [python]
+    patterns:
+      - pattern: $X = "..."
+      - metavariable-regex:
+          metavariable: $X
+          regex: (?i).*(password|secret|token).*

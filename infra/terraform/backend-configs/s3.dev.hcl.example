@@ -1,0 +1,7 @@
+# Remote state (Section 7) — S3 backend + DynamoDB lock for development.
+
+bucket         = "PLACEHOLDER-TFSTATE-BUCKET-DEV"
+key            = "vanguard/dev/terraform.tfstate"
+region         = "us-gov-west-1"
+dynamodb_table = "PLACEHOLDER-TFSTATE-LOCK-DEV"
+encrypt        = true

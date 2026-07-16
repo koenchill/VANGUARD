@@ -1,0 +1,12 @@
+# Checkov custom policy notes for VANGUARD (Section 7)
+#
+# Primary separation enforcement lives in tools/check_terraform_separation.py
+# (fails CI if any .tf file exists under infra/terraform/app/, or if modules
+# contain hardcoded CIDRs/regions/instance types).
+#
+# Run:
+#   python tools/check_terraform_separation.py
+#   checkov -d infra/terraform/modules --framework terraform
+#   checkov -d infra/terraform/environments --framework terraform
+
+skip-check: []

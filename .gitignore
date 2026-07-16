@@ -1,0 +1,66 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+!.vscode/extensions.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Node / tooling (if present)
+node_modules/
+npm-debug.log*
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+!infra/terraform/app/*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+infra/terraform/environments/**/terraform.tfstate
+infra/terraform/environments/**/.terraform.lock.hcl
+
+# Secrets / local credentials
+*.pem
+*.key
+credentials.json
+secrets/
+
+# Docker / local data
+*.log
+.tmp/
+.cache/
+
+# dbt
+app/data_pipelines/sql/target/
+app/data_pipelines/sql/dbt_packages/
+app/data_pipelines/sql/logs/
+*.duckdb
+
+
+# Cursor local (keep shared rules tracked)
+.cursor/*.log

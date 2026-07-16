@@ -1,0 +1,24 @@
+name: vanguard_curation
+version: 1.0.0
+config-version: 2
+profile: vanguard_curation
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  vanguard_curation:
+    +materialized: view
+    staging:
+      +schema: staging
+    curation:
+      +schema: curation
+      +materialized: incremental
+    marts:
+      reporting:
+        +schema: reporting
+        +materialized: table

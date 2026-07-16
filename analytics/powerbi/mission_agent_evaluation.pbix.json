@@ -1,0 +1,56 @@
+{
+  "format": "vanguard.pbix.json/v1",
+  "name": "mission_agent_evaluation",
+  "displayName": "Mission / Agent Evaluation",
+  "connectionMode": "DirectQuery",
+  "forbidImportMode": true,
+  "gatewayCluster": "vanguard-mission-gateway",
+  "identity": "kerberos_constrained_delegation",
+  "datasource": {
+    "engine": "trino",
+    "catalog": "mission_marts",
+    "schema": "reporting",
+    "relation": "fct_mission_agent_eval"
+  },
+  "pages": [
+    {
+      "name": "Overview",
+      "visuals": [
+        {
+          "id": "task_completion_rate",
+          "title": "Task-completion rate",
+          "type": "card",
+          "queryMetric": "task_completion_rate"
+        },
+        {
+          "id": "faithfulness_score",
+          "title": "Hallucination / faithfulness scores",
+          "type": "card",
+          "queryMetric": "faithfulness_score"
+        },
+        {
+          "id": "cost_per_inference",
+          "title": "Cost-per-inference",
+          "type": "card",
+          "queryMetric": "cost_per_inference"
+        },
+        {
+          "id": "mission_scenario_outcomes",
+          "title": "Forward-deployed mission-scenario outcomes",
+          "type": "card",
+          "queryMetric": "mission_scenario_outcomes"
+        },
+        {
+          "id": "per_agent_step_telemetry",
+          "title": "Per-agent-step telemetry",
+          "type": "card",
+          "queryMetric": "per_agent_step_telemetry"
+        }
+      ]
+    }
+  ],
+  "rls": {
+    "enforcedAt": "trino_opa",
+    "defenseInDepth": "powerbi_native_rls"
+  }
+}

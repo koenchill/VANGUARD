@@ -1,0 +1,10 @@
+# Dependencies for Local + CI pytest (unit/integration and related suites).
+# Keep jsonschema/PyYAML pinned here too so CI cannot miss tools/requirements.txt includes.
+pytest==8.3.5
+PyYAML==6.0.2
+jsonschema==4.23.0
+SQLAlchemy==2.0.40
+cryptography==48.0.1
+fastapi==0.115.6
+uvicorn==0.34.0
+httpx==0.28.1

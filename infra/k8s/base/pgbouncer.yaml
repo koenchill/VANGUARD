@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgbouncer-config
+  namespace: gateway
+  labels:
+    app: pgbouncer
+data:
+  pgbouncer.ini: |
+    [databases]
+    curation_metadata = host=rds-metadata-primary.internal port=5432 dbname=curation_metadata
+    curation_metadata_replica = host=rds-metadata-replica.internal port=5432 dbname=curation_metadata
+
+    [pgbouncer]
+    listen_addr = 0.0.0.0
+    listen_port = 6432
+    auth_type = scram-sha-256
+    auth_file = /etc/pgbouncer/userlist.txt
+    pool_mode = transaction
+    max_client_conn = 500
+    default_pool_size = 40
+    ; G-023 per-service connection budgets
+    ; curation pipeline
+    ; BI / query-engine reads
+    ; agent runtime
+    ignore_startup_parameters = extra_float_digits
+    server_reset_query = DISCARD ALL
+    server_check_delay = 30
+    query_wait_timeout = 60
+  userlist.txt: |
+    "curation_pipeline" "md5placeholder"
+    "bi_reader" "md5placeholder"
+    "agent_runtime" "md5placeholder"
+  connection-budgets.yaml: |
+    # G-023 — enforced at the pooler (documented budgets; PgBouncer user-level caps)
+    services:
+      curation_pipeline:
+        max_connections: 80
+        route: primary
+      bi_query_engine:
+        max_connections: 120
+        route: replica
+        max_replica_lag_seconds: 30
+        lag_policy: fail_closed
+      agent_runtime:
+        max_connections: 40
+        route: primary
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgbouncer
+  namespace: gateway
+  labels:
+    app: pgbouncer
+    app.kubernetes.io/part-of: vanguard
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pgbouncer
+  template:
+    metadata:
+      labels:
+        app: pgbouncer
+        workload-tier: gateway-general
+    spec:
+      nodeSelector:
+        karpenter.sh/nodepool: gateway-general
+      tolerations:
+        - key: workload-tier
+          operator: Equal
+          value: gateway-general
+          effect: NoSchedule
+      containers:
+        - name: pgbouncer
+          image: edoburu/pgbouncer:v1.22.1-p0
+          ports:
+            - containerPort: 6432
+              name: pgbouncer
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pgbouncer
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+      volumes:
+        - name: config
+          configMap:
+            name: pgbouncer-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgbouncer
+  namespace: gateway
+  labels:
+    app: pgbouncer
+spec:
+  selector:
+    app: pgbouncer
+  ports:
+    - name: pgbouncer
+      port: 6432
+      targetPort: pgbouncer

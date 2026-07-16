@@ -1,0 +1,32 @@
+---
+# G-004: constrained delegation so Trino audit identity == PowerBI viewer, not gateway SA.
+- name: Document required AD delegation trust (Cloud-Integration step)
+  ansible.builtin.debug:
+    msg: >-
+      Configure msDS-AllowedToDelegateTo on the gateway computer objects to
+      include {{ trino_spn }}, and set TrustedToAuthForDelegation on
+      {{ trino_service_account }} in domain {{ ad_domain }}.
+
+- name: Apply local Kerberos settings on gateway hosts
+  ansible.windows.win_shell: |
+    $spn = "{{ trino_spn }}"
+    $domain = "{{ ad_domain }}"
+    Write-Output "Enabling constrained delegation path for SPN $spn in $domain"
+    # Live tenant: setspn / klist / gateway SSO config against Trino ODBC DSN.
+    # Fail-closed: if end-user identity is missing, OPA must deny (not default SA).
+  args:
+    executable: powershell
+
+- name: Write Trino ODBC connection template (DirectQuery only)
+  ansible.windows.win_copy:
+    dest: "C:\\ProgramData\\Vanguard\\trino-directquery.dsn.json"
+    content: |
+      {
+        "engine": "trino",
+        "mode": "DirectQuery",
+        "endpoint": "trino.query-engine.svc.cluster.local:8080",
+        "catalog": "mission_marts",
+        "schema": "reporting",
+        "auth": "kerberos_constrained_delegation",
+        "forbid_import_mode": true
+      }

@@ -1,0 +1,21 @@
+apiVersion: 1
+datasources:
+- name: Prometheus
+  type: prometheus
+  access: proxy
+  url: http://prometheus.observability.svc.cluster.local:9090
+  editable: false
+- name: MissionBI-Trino
+  type: grafana-trino-datasource
+  access: proxy
+  url: http://trino.query-engine.svc.cluster.local:8080
+  jsonData:
+    catalog: mission_marts
+    oauthPassThru: true
+  editable: false
+- name: MissionBI-MetadataDB
+  type: postgres
+  access: proxy
+  url: rds-metadata-replica.internal:5432
+  database: curation_metadata
+  editable: false

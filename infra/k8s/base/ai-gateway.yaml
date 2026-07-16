@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-gateway
+  namespace: gateway
+  labels:
+    app: ai-gateway
+    workload: gateway
+    app.kubernetes.io/part-of: vanguard
+  annotations:
+    vanguard.ai/resource-contract: infra/docker/resources/gateway.yaml
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ai-gateway
+  template:
+    metadata:
+      labels:
+        app: ai-gateway
+        workload: gateway
+        workload-tier: gateway-general
+    spec:
+      nodeSelector:
+        karpenter.sh/nodepool: gateway-general
+      tolerations:
+      - key: workload-tier
+        operator: Equal
+        value: gateway-general
+        effect: NoSchedule
+      containers:
+      - name: ai-gateway
+        image: vanguard/gateway:phase2
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 8888
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+            ephemeral-storage: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+            ephemeral-storage: 1Gi
+        env:
+        - name: VANGUARD_WORKLOAD
+          value: gateway
+        ports:
+        - containerPort: 8000
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-gateway
+  namespace: gateway
+  labels:
+    app: ai-gateway
+spec:
+  selector:
+    app: ai-gateway
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http

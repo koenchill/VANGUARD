@@ -1,0 +1,14 @@
+# Remote state (Section 7) — S3 backend + DynamoDB lock, isolated per environment.
+#
+# When a real GovCloud account is available, migrate from the local backend:
+#
+#   terraform init -migrate-state \
+#     -backend-config=../../backend-configs/s3.prod.hcl
+#
+# Do not commit real account IDs or bucket names that are secrets; replace PLACEHOLDERs.
+
+bucket         = "PLACEHOLDER-TFSTATE-BUCKET-PROD"
+key            = "vanguard/prod/terraform.tfstate"
+region         = "us-gov-west-1"
+dynamodb_table = "PLACEHOLDER-TFSTATE-LOCK-PROD"
+encrypt        = true

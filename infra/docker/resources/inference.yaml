@@ -1,0 +1,10 @@
+workload: inference
+cpu_request: "2000m"
+cpu_limit: "8000m"
+memory_request: "8Gi"
+memory_limit: "32Gi"
+gpu_count: 1
+gpu_type: "nvidia-a10g"
+architecture: amd64
+ephemeral_storage: "20Gi"
+nodepool: inference-gpu

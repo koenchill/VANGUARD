@@ -1,0 +1,8 @@
+---
+# Kerberos constrained delegation: gateway impersonates viewer → Trino (G-004).
+- name: Configure Kerberos constrained delegation for Trino
+  hosts: powerbi_gateway
+  gather_facts: false
+  roles:
+    - role: powerbi_gateway
+      tasks_from: kerberos

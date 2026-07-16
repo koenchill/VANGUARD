@@ -1,0 +1,18 @@
+# Weekly full backup policy — Section 8 / G-006.
+cadence: weekly
+schedule: "cron(0 3 ? * SUN *)"
+retention_weeks: 12
+quiesce_strategy: delta_transaction_log_plus_rds_pitr_timestamp
+produces_recovery_set_manifest: true
+manifest_dir: backup-dr/manifests/
+components:
+  - delta_table_version
+  - rds_recovery_point
+  - velero_backup_id
+  - milvus_vector_checkpoint
+  - model_prompt_digest
+  - opa_policy_bundle_digest
+  - schema_migration_version
+cross_region_copy: true
+rpo_hours: 24
+monthly_restore_drill: true

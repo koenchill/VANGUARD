@@ -1,0 +1,83 @@
+name: Nightly Security
+
+# Deeper scheduled scans + restore/security drills scaffolding (G-015 / Section 8 cadence).
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # 06:00 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DAST_BLOCKED_HOSTS: "api.vanguard.prod,gateway.vanguard.prod,trino.prod.internal,powerbi.microsoft.com"
+
+jobs:
+  nightly-sast-sca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v4 pinned
+
+      - name: Enforce Action SHA pins
+        run: python tools/check_cicd_gates.py --workflows .github/workflows
+
+      - name: Semgrep SAST (full)
+        uses: semgrep/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d
+        env:
+          SEMGREP_EXCLUDE: security/sast-sca-dast/fixtures/planted
+        with:
+          config: p/default
+
+      - name: Trivy SCA + misconfig
+        uses: aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8
+        with:
+          scan-type: fs
+          scan-ref: .
+          exit-code: "1"
+          severity: CRITICAL,HIGH,MEDIUM
+          format: sarif
+          output: trivy-nightly.sarif
+
+      - name: Upload Trivy SARIF
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+        with:
+          name: trivy-nightly-${{ github.sha }}
+          path: trivy-nightly.sarif
+
+  nightly-dast:
+    needs: nightly-sast-sca
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+
+      - name: Build disposable gateway
+        run: docker build -t local/gateway-under-test:nightly -f infra/docker/gateway.Dockerfile .
+
+      - name: Start + ready + ZAP
+        run: |
+          docker run -d --name dast-target -p 8000:8000 \
+            -e AUTH_MODE=test-only \
+            -e API_KEY=dast-test-only \
+            local/gateway-under-test:nightly
+          for i in $(seq 1 30); do curl -sf http://localhost:8000/readyz && break; sleep 2; done
+          curl -sf http://localhost:8000/openapi.json | head -c 200
+
+      - name: ZAP API scan
+        uses: zaproxy/action-api-scan@32933216f5785fc072927c7d24f47c5a2076f1ec
+        with:
+          target: "http://localhost:8000/openapi.json"
+          fail_action: true
+          allow_issue_writing: false
+
+      - name: Tear down
+        if: always()
+        run: docker rm -f dast-target
+
+  planted-issue-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+      - name: Confirm planted fixtures would fail gates
+        run: python tools/check_cicd_gates.py --verify-planted-fixtures

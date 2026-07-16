@@ -1,0 +1,44 @@
+{
+  "format": "vanguard.pbix.json/v1",
+  "name": "data_quality_drift",
+  "displayName": "Data Quality & Drift",
+  "connectionMode": "DirectQuery",
+  "forbidImportMode": true,
+  "gatewayCluster": "vanguard-mission-gateway",
+  "identity": "kerberos_constrained_delegation",
+  "datasource": {
+    "engine": "trino",
+    "catalog": "mission_marts",
+    "schema": "reporting",
+    "relation": "fct_data_quality"
+  },
+  "pages": [
+    {
+      "name": "Overview",
+      "visuals": [
+        {
+          "id": "quality_score_trend",
+          "title": "quality_score trend",
+          "type": "card",
+          "queryMetric": "quality_score_trend"
+        },
+        {
+          "id": "drift_flag_rate",
+          "title": "drift_flag rate over time",
+          "type": "card",
+          "queryMetric": "drift_flag_rate"
+        },
+        {
+          "id": "drift_by_source_uri",
+          "title": "Drift breakdown by source_uri",
+          "type": "card",
+          "queryMetric": "drift_by_source_uri"
+        }
+      ]
+    }
+  ],
+  "rls": {
+    "enforcedAt": "trino_opa",
+    "defenseInDepth": "powerbi_native_rls"
+  }
+}

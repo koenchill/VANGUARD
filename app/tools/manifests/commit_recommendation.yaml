@@ -1,0 +1,6 @@
+tool_name: commit_recommendation
+description: Commit a COA recommendation — high consequence
+allowed_resource_scopes:
+  - coa.commit.*
+requires_hitl: true
+sandbox: none

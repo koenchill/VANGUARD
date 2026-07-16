@@ -1,0 +1,2 @@
+# Exclude intentional planted findings from merge-blocking scans.
+security/sast-sca-dast/fixtures/planted/

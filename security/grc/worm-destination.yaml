@@ -1,0 +1,22 @@
+# WORM destination wiring for G-018 (Design + Local stand-in).
+destination:
+  primary:
+    type: s3_object_lock
+    mode: COMPLIANCE
+    retention:
+      U: days:90
+      FOUO: days:365
+      SECRET: years:7
+  query_replica:
+    type: opensearch
+    purpose: investigator_query_only
+integrity:
+  mode: hash_chain
+  genesis: "000...0"
+time_source: trusted_ntp_not_client_supplied
+roles:
+  operator: vanguard-audit-operator
+  evidence_reader: vanguard-audit-evidence-reader
+separation_of_duty: >
+  Operators may append events but cannot be the sole evidence_reader on their own
+  actions. Evidence readers have GetObject on the WORM bucket without Delete/Put.

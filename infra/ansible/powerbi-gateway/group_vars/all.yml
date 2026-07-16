@@ -1,0 +1,11 @@
+---
+# Shared vars for PowerBI gateway cluster (G-003 / G-004). Environment-specific
+# secrets and ARNs stay in infra/terraform/app/{env}.tfvars.json — not here.
+gateway_cluster_name: "vanguard-mission-gateway"
+gateway_installer_url: "https://go.microsoft.com/fwlink/?LinkId=2116849"
+trino_spn: "HTTP/trino.query-engine.svc.cluster.local"
+trino_service_account: "TRINO_SVC"
+ad_domain: "mission.internal"
+gateway_recovery_key_secret: "{{ lookup('env', 'PBI_GATEWAY_RECOVERY_KEY') | default('CHANGE_ME', true) }}"
+gateway_member_count: 2
+maintenance_window: "Sun 02:00-06:00"

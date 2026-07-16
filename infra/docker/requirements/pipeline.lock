@@ -1,0 +1,5 @@
+# Locked runtime deps for pipeline image (Phase 2). Mirror of pipeline.txt pins.
+pydantic==2.10.4
+annotated-types==0.7.0
+pydantic-core==2.27.2
+typing-extensions==4.12.2

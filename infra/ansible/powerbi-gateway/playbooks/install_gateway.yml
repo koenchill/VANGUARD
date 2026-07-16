@@ -1,0 +1,8 @@
+---
+# Install standard gateway + join cluster on both Windows members (G-003).
+- name: Install PowerBI on-premises data gateway cluster
+  hosts: powerbi_gateway
+  gather_facts: true
+  roles:
+    - role: powerbi_gateway
+      tasks_from: install

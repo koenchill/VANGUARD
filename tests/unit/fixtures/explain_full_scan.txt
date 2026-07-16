@@ -1,0 +1,4 @@
+QUERY PLAN
+-------------------------------------------------
+Seq Scan on curated_datasets  (cost=0.00..1000.00 rows=50000)
+  Filter: (quality_score > 0.5)

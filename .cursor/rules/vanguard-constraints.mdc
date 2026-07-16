@@ -1,0 +1,21 @@
+---
+description: VANGUARD non-negotiable folder separations, fixed tech baseline, and root hygiene
+alwaysApply: true
+---
+
+# VANGUARD Constraints
+
+Hard rules for every change in this repository:
+
+1. `app/` never contains Terraform, Dockerfiles, or Kubernetes manifests.
+2. `infra/terraform/modules/` contains zero hardcoded environment values.
+3. `infra/terraform/app/` contains ONLY `dev.tfvars.json` and `prod.tfvars.json` — no `.tf` files ever.
+4. Fixed baseline: Delta Lake, Ray, lakeFS, Milvus, Trino-only, PowerBI Windows gateway (never container), ArgoCD, Semgrep, K6.
+5. Dockerfiles install into `/opt/venv` (never `pip install --user`); runtime USER is UID 8888.
+6. Karpenter: `karpenter.sh/v1` only; never mix GPU and CPU-optimized families in one NodePool.
+7. Before creating a file, grep for existing path references — match existing interfaces.
+8. Read cited build-prompt sections before implementing.
+9. Keep repository root minimal — no app/infra source at root.
+10. `app/api/` MVC-equivalent: thin routers; logic in services/agents; persistence in models + data pipelines; views in `analytics/`.
+
+Work on `dev` for phase implementation; merge to `main` only after the phase gate passes.

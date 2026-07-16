@@ -1,0 +1,77 @@
+# Single source of truth for dual-path BI dashboards (Section 5).
+# Grafana JSON and PowerBI report definitions must expose these exact metrics.
+dashboards:
+  - id: curation_health
+    title: Curation Pipeline Health
+    path_grafana: analytics/grafana/dashboards/curation_health.json
+    path_powerbi: analytics/powerbi/curation_health.pbix.json
+    trino_relation: mission_marts.reporting.fct_curation_health
+    metrics:
+      - id: records_processed_per_day
+        label: Records processed / day
+      - id: pii_scrub_rate
+        label: PII-scrub rate
+      - id: dedup_rate
+        label: Dedup rate
+      - id: hitl_approval_throughput
+        label: HITL approval throughput
+      - id: curation_stage_funnel
+        label: Curation-stage funnel (raw → approved → rejected)
+
+  - id: data_quality_drift
+    title: Data Quality & Drift
+    path_grafana: analytics/grafana/dashboards/data_quality_drift.json
+    path_powerbi: analytics/powerbi/data_quality_drift.pbix.json
+    trino_relation: mission_marts.reporting.fct_data_quality
+    metrics:
+      - id: quality_score_trend
+        label: quality_score trend
+      - id: drift_flag_rate
+        label: drift_flag rate over time
+      - id: drift_by_source_uri
+        label: Drift breakdown by source_uri
+
+  - id: security_compliance
+    title: Security & Compliance Posture
+    path_grafana: analytics/grafana/dashboards/security_compliance.json
+    path_powerbi: analytics/powerbi/security_compliance.pbix.json
+    trino_relation: mission_marts.reporting.fct_security_compliance
+    metrics:
+      - id: sast_sca_dast_pass_rate
+        label: SAST/SCA/DAST pass-rate trend
+      - id: stride_residual_risk
+        label: STRIDE residual-risk summary
+      - id: nist_ai_rmf_coverage
+        label: NIST AI RMF control-coverage %
+      - id: backup_dr_restore_pass_rate
+        label: Backup/DR restore-test pass rate
+
+  - id: mission_agent_evaluation
+    title: Mission / Agent Evaluation
+    path_grafana: analytics/grafana/dashboards/mission_agent_evaluation.json
+    path_powerbi: analytics/powerbi/mission_agent_evaluation.pbix.json
+    trino_relation: mission_marts.reporting.fct_mission_agent_eval
+    metrics:
+      - id: task_completion_rate
+        label: Task-completion rate
+      - id: faithfulness_score
+        label: Hallucination / faithfulness scores
+      - id: cost_per_inference
+        label: Cost-per-inference
+      - id: mission_scenario_outcomes
+        label: Forward-deployed mission-scenario outcomes
+      - id: per_agent_step_telemetry
+        label: Per-agent-step telemetry
+
+refresh:
+  cadence: incremental
+  aligned_to: daily_weekly_curation_and_backup
+connection:
+  query_engine: trino
+  semantic_layer: sql/marts/reporting
+  metadata_db: rds_read_replica
+  never_query: [raw_lake, bronze, silver, gold_facts]
+identity:
+  powerbi: kerberos_constrained_delegation
+  grafana: oauthPassThru
+  fail_closed: true

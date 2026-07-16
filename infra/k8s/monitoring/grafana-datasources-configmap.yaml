@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: observability
+data:
+  datasources.yaml: "apiVersion: 1\ndatasources:\n- name: Prometheus\n  type: prometheus\n\
+    \  access: proxy\n  url: http://prometheus.observability.svc.cluster.local:9090\n\
+    \  editable: false\n- name: MissionBI-Trino\n  type: grafana-trino-datasource\n\
+    \  access: proxy\n  url: http://trino.query-engine.svc.cluster.local:8080\n  jsonData:\n\
+    \    catalog: mission_marts\n    oauthPassThru: true\n  editable: false\n- name:\
+    \ MissionBI-MetadataDB\n  type: postgres\n  access: proxy\n  url: rds-metadata-replica.internal:5432\n\
+    \  database: curation_metadata\n  editable: false\n"

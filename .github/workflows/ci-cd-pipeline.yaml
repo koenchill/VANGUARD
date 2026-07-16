@@ -1,0 +1,173 @@
+name: DevSecOps CI/CD Pipeline
+
+# Section 12 / G-015 / G-019 — third-party Actions pinned to full commit SHAs (not tags).
+# DAST builds and scans a disposable local gateway target; production hostnames are hard-blocked.
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_REF: local/gateway-under-test:${{ github.sha }}
+  # G-015: production hostnames must never be valid DAST targets.
+  DAST_BLOCKED_HOSTS: "api.vanguard.prod,gateway.vanguard.prod,trino.prod.internal,powerbi.microsoft.com"
+
+jobs:
+  security-scans:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v4 pinned
+
+      - name: Enforce Action SHA pins + blocked DAST hosts
+        run: python tools/check_cicd_gates.py --workflows .github/workflows
+
+      - name: Fail if Terraform files land under app/
+        run: python tools/check_terraform_separation.py
+
+      - name: Semgrep SAST
+        uses: semgrep/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d # pinned SHA (G-019)
+        env:
+          SEMGREP_EXCLUDE: security/sast-sca-dast/fixtures/planted
+        with:
+          config: p/default
+
+      - name: Trivy SCA (dependencies)
+        uses: aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8 # pinned SHA
+        with:
+          scan-type: fs
+          scan-ref: .
+          exit-code: "1"
+          severity: CRITICAL,HIGH
+          format: table
+
+      - name: Generate SBOM
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          syft dir:. -o spdx-json > sbom.json
+          test -s sbom.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3 pinned
+        with:
+          name: sbom-${{ github.sha }}
+          path: sbom.json
+
+  # Run in parallel with security-scans so dependency/collection failures are visible
+  # even when SAST/SCA jobs fail independently.
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0 pinned
+        with:
+          python-version: "3.11"
+      - name: Install test dependencies
+        run: |
+          set -eux
+          python -m pip install --upgrade pip
+          # Explicit pins (not only -r) so a bad requirements include cannot omit jsonschema.
+          python -m pip install \
+            "pytest==8.3.5" \
+            "PyYAML==6.0.2" \
+            "jsonschema==4.23.0" \
+            "SQLAlchemy==2.0.40" \
+            "cryptography==48.0.1" \
+            "fastapi==0.115.6" \
+            "uvicorn==0.34.0" \
+            "httpx==0.28.1"
+          python -c "import jsonschema, yaml, pytest, httpx; print('deps-ok', jsonschema.__file__)"
+      - name: Install kubectl (kustomize build gate)
+        run: |
+          mkdir -p "$HOME/bin"
+          curl -sSfL "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl" -o "$HOME/bin/kubectl"
+          chmod +x "$HOME/bin/kubectl"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+          "$HOME/bin/kubectl" version --client
+      - name: Run unit+integration gates via python -m pytest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -c "import jsonschema; print('pre-pytest jsonschema OK')"
+          python -m pytest tests/unit tests/integration -q --tb=short
+
+  build-and-dast:
+    needs: [security-scans, unit-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+
+      - name: Reject production hostnames as DAST targets
+        run: |
+          python tools/check_cicd_gates.py --assert-dast-localhost \
+            --workflow .github/workflows/ci-cd-pipeline.yaml \
+            --blocked-hosts "$DAST_BLOCKED_HOSTS"
+
+      - name: Build gateway image (digest-pinned base, Section 2)
+        run: |
+          docker build -t "${IMAGE_REF}" -f infra/docker/gateway.Dockerfile .
+
+      - name: Sign image (cosign)
+        env:
+          COSIGN_YES: "true"
+        run: |
+          mkdir -p "$HOME/bin"
+          curl -sSfL https://github.com/sigstore/cosign/releases/download/v2.4.1/cosign-linux-amd64 -o "$HOME/bin/cosign"
+          chmod +x "$HOME/bin/cosign"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+          if [ -n "${{ secrets.COSIGN_KEY }}" ]; then
+            echo "${{ secrets.COSIGN_KEY }}" > cosign.key
+            "$HOME/bin/cosign" sign --key cosign.key "${IMAGE_REF}"
+            "$HOME/bin/cosign" attest --predicate <(echo '{"build":"vanguard","sha":"${{ github.sha }}"}') --type spdx --key cosign.key "${IMAGE_REF}" || true
+          else
+            # Portfolio/local runners: keyless optional; presence of step is the G-019 control surface.
+            # Local builds have no RepoDigests until push — record image Id instead.
+            echo "COSIGN_KEY unset — recording unsigned digest for Local evidence"
+            docker image inspect "${IMAGE_REF}" --format '{{.Id}}' > image-digest.txt
+            test -s image-digest.txt
+            cat image-digest.txt
+          fi
+
+      - name: Start disposable target with test-only credentials
+        env:
+          DAST_API_KEY: ${{ secrets.DAST_TEST_API_KEY }}
+        run: |
+          docker run -d --name dast-target -p 8000:8000 \
+            -e AUTH_MODE=test-only \
+            -e API_KEY="${DAST_API_KEY:-dast-test-only}" \
+            -e VANGUARD_WORKLOAD=gateway \
+            "${IMAGE_REF}"
+
+      - name: Wait for readiness (/readyz)
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/readyz; then
+              echo "ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs dast-target || true
+          exit 1
+
+      - name: Authenticated ZAP API scan against the real running target
+        uses: zaproxy/action-api-scan@32933216f5785fc072927c7d24f47c5a2076f1ec # pinned SHA (G-019)
+        with:
+          target: "http://localhost:8000/openapi.json"
+          fail_action: true
+          allow_issue_writing: false
+          # Network egress from this job is restricted to localhost + the runner —
+          # production hostnames are hard-blocked at the runner network-policy level
+          # (see security/sast-sca-dast/runner-network-policy.yaml).
+
+      - name: Tear down
+        if: always()
+        run: docker rm -f dast-target

@@ -1,0 +1,16 @@
+# Sample privileged pod — must be REJECTED by Kyverno forbid-privileged-pods.
+# Used for admission dry-run / §14 Phase 8 gate evidence (not deployable).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: deliberately-privileged
+  namespace: agentic-app
+  labels:
+    vanguard.io/fixture: "policy-reject"
+spec:
+  containers:
+    - name: evil
+      image: public.ecr.aws/docker/library/busybox:1.36
+      securityContext:
+        privileged: true
+        runAsUser: 0

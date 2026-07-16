@@ -21,14 +21,13 @@ Forward-deployed agentic AI platform — **portfolio reference architecture** de
 | `.cursorrules` | Same constraints for Cursor-compatible tools |
 | `.cursor/rules/` | Always-on Cursor project rules |
 | `.gitignore` | Ignore patterns for TF state, secrets, caches |
+| `tools/` | Repo build tooling (resource-contract renderer) — not app code |
 
-Application, infrastructure, security, tests, and docs are added in later phases under their dedicated top-level folders (`app/`, `infra/`, `security/`, `tests/`, `docs/`, `analytics/`, `backup-dr/`). **Do not place source or Terraform at the repo root.**
+Application, infrastructure, security, tests, and docs live under dedicated top-level folders (`app/`, `infra/`, `security/`, `tests/`, `docs/`, `analytics/`, `backup-dr/`). **Do not place application source or Terraform at the repo root.**
 
 ## Current build phase
 
-**Phase 1 — Repository scaffolding** (complete on `dev`): Section 1 directory tree with folder READMEs only — no Terraform, Dockerfiles, or application code yet.
-
-Next: **Phase 2** — Docker images and the resource-contract renderer (G-007, G-008).
+**Phase 2 — Docker + resource contracts** (in progress on `dev`): three `/opt/venv` Dockerfiles (UID 8888), `infra/docker/resources/` schema+contracts, and `tools/render-resources.py` (G-007, G-008).
 
 ## Quick facts
 

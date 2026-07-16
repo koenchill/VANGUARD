@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vanguard.local/schemas/docker-resource-contract.json",
+  "title": "VANGUARD Docker Resource Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "workload",
+    "cpu_request",
+    "cpu_limit",
+    "memory_request",
+    "memory_limit",
+    "gpu_count",
+    "gpu_type",
+    "architecture",
+    "ephemeral_storage",
+    "nodepool"
+  ],
+  "properties": {
+    "workload": {
+      "type": "string",
+      "enum": ["inference", "pipeline", "gateway"]
+    },
+    "cpu_request": {
+      "type": "string",
+      "pattern": "^[0-9]+m?$"
+    },
+    "cpu_limit": {
+      "type": "string",
+      "pattern": "^[0-9]+m?$"
+    },
+    "memory_request": {
+      "type": "string",
+      "pattern": "^[0-9]+(Mi|Gi)$"
+    },
+    "memory_limit": {
+      "type": "string",
+      "pattern": "^[0-9]+(Mi|Gi)$"
+    },
+    "gpu_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "gpu_type": {
+      "type": ["string", "null"],
+      "description": "GPU product family when gpu_count > 0; null for CPU-only workloads"
+    },
+    "architecture": {
+      "type": "string",
+      "enum": ["amd64", "arm64"]
+    },
+    "ephemeral_storage": {
+      "type": "string",
+      "pattern": "^[0-9]+(Mi|Gi)$"
+    },
+    "nodepool": {
+      "type": "string",
+      "enum": ["inference-gpu", "pipeline-cpu", "gateway-general", "sandbox-runtime"]
+    }
+  }
+}

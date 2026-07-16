@@ -1,0 +1,10 @@
+workload: pipeline
+cpu_request: "4000m"
+cpu_limit: "16000m"
+memory_request: "16Gi"
+memory_limit: "64Gi"
+gpu_count: 0
+gpu_type: null
+architecture: amd64
+ephemeral_storage: "50Gi"
+nodepool: pipeline-cpu

@@ -79,8 +79,9 @@ jobs:
             "SQLAlchemy==2.0.40" \
             "cryptography==48.0.1" \
             "fastapi==0.115.6" \
-            "uvicorn==0.34.0"
-          python -c "import jsonschema, yaml, pytest; print('deps-ok', jsonschema.__file__)"
+            "uvicorn==0.34.0" \
+            "httpx==0.28.1"
+          python -c "import jsonschema, yaml, pytest, httpx; print('deps-ok', jsonschema.__file__)"
       - name: Install kubectl (kustomize build gate)
         run: |
           mkdir -p "$HOME/bin"

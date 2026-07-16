@@ -18,4 +18,4 @@ Production-mimicry test pyramid (Section 9):
 pip install -r tests/requirements.txt
 ```
 
-`tests/requirements.txt` pulls in `tools/requirements.txt` (`PyYAML` + `jsonschema`) because unit tests import `tools/render_resources.py`.
+`tests/requirements.txt` pins `PyYAML` + `jsonschema` because unit tests import `tools/render_resources.py`.

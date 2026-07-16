@@ -13,15 +13,15 @@ from typing import Any
 try:
     import yaml
 except ImportError as exc:  # pragma: no cover
-    raise SystemExit(
-        "PyYAML is required. Install with: pip install pyyaml jsonschema"
+    raise ImportError(
+        "PyYAML is required. Install with: pip install -r tests/requirements.txt"
     ) from exc
 
 try:
     import jsonschema
 except ImportError as exc:  # pragma: no cover
-    raise SystemExit(
-        "jsonschema is required. Install with: pip install pyyaml jsonschema"
+    raise ImportError(
+        "jsonschema is required. Install with: pip install -r tests/requirements.txt"
     ) from exc
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

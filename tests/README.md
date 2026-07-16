@@ -19,3 +19,18 @@ pip install -r tests/requirements.txt
 ```
 
 `tests/requirements.txt` pins `PyYAML` + `jsonschema` because unit tests import `tools/render_resources.py`.
+
+## Mimic production (Local)
+
+Use the operator scripts (gateway container + full pyramid + optional k6):
+
+```powershell
+.\scripts\mimic-prod.ps1 -Quick
+```
+
+```bash
+./scripts/mimic-prod.sh --quick
+```
+
+See `scripts/README.md`. Report: `docs/validation/mimic-prod-report.md`.
+This is portfolio Local evidence (G-001), not live tenant / ATO proof.

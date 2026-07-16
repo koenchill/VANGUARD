@@ -27,7 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 2 — Docker + resource contracts** (in progress on `dev`): three `/opt/venv` Dockerfiles (UID 8888), `infra/docker/resources/` schema+contracts, and `tools/render-resources.py` (G-007, G-008).
+**Phase 2 — Docker + resource contracts** (complete on `dev`): three `/opt/venv` Dockerfiles (UID 8888), `infra/docker/resources/` schema+contracts, and `tools/render_resources.py` (G-007, G-008).
+
+Next: **Phase 3** — Terraform modules (bottom-up, no environment values).
 
 ## Quick facts
 

@@ -34,7 +34,7 @@ REPORT_JSON = OUT_DIR / "mimic-prod-report.json"
 REPORT_MD = OUT_DIR / "mimic-prod-report.md"
 GATEWAY_IMAGE = "local/vanguard-gateway:mimic-prod"
 GATEWAY_NAME = "vanguard-mimic-prod"
-GATEWAY_PORT = 8000
+GATEWAY_PORT = int(os.getenv("VANGUARD_GATEWAY_PORT", "8000"))
 K6_SUMMARY = REPO / "tests" / "load" / "reports" / "k6-summary-mimic.json"
 
 

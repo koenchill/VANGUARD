@@ -7,12 +7,27 @@
 
 param(
     [switch]$KeepGateway,
-    [switch]$ForceVenv
+    [switch]$ForceVenv,
+    [int]$GatewayPort = 0
 )
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $RepoRoot
+
+function Test-PortFree([int]$Port) {
+    -not (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
+}
+
+if ($GatewayPort -le 0) {
+    if (Test-PortFree 8000) {
+        $GatewayPort = 8000
+    } else {
+        $GatewayPort = 18010
+        Write-Host "Host :8000 is busy; using VANGUARD_GATEWAY_PORT=$GatewayPort for smoke"
+    }
+}
+$env:VANGUARD_GATEWAY_PORT = "$GatewayPort"
 
 $ensureArgs = @()
 if ($ForceVenv) { $ensureArgs += "-Force" }
@@ -29,6 +44,6 @@ $mimicArgs = @(
 )
 if ($KeepGateway) { $mimicArgs += "--keep-gateway" }
 
-Write-Host "VANGUARD smoke -> $Py tools/run_mimic_prod.py $($mimicArgs -join ' ')"
+Write-Host "VANGUARD smoke -> $Py tools/run_mimic_prod.py $($mimicArgs -join ' ') (port $GatewayPort)"
 & $Py tools/run_mimic_prod.py @mimicArgs
 exit $LASTEXITCODE

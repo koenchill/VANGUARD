@@ -183,7 +183,6 @@ spec:
     - protocol: TCP
       port: 8000
 ---
-# Incident containment — isolate suspect agent pods (AML.M0015 playbook).
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -195,7 +194,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      vanguard.io/quarantine: "true"
+      vanguard.io/quarantine: 'true'
   policyTypes:
   - Ingress
   - Egress

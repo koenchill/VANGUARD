@@ -27,9 +27,9 @@ Application, infrastructure, security, tests, and docs live under dedicated top-
 
 ## Current build phase
 
-**Phase 13 — Backup/DR + audit** (complete on `dev`): G-006 signed recovery-set manifests (stale-ref rejected), daily/weekly policies + DR runbooks; G-018 hash-chained WORM audit with tamper/deletion/replay drills and IAM role separation.
+**Phase 14 — Full validation** (complete on `dev`): Section 14 Local walkthrough all PASS (100 pytest); deliverables checklist evidence-linked; gap register reconciled (Phase 2 Local closed; Phase 3 Cloud / Phase 4 org remain open); Go for portfolio freeze / No-Go for ATO.
 
-Next: **Phase 14** — Full validation + gap-register reconciliation.
+Build phases **0–14 complete** on `dev`. See `docs/validation/go-no-go.md`.
 
 ## Quick facts
 

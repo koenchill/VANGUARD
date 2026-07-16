@@ -172,6 +172,56 @@ def render_network_policies() -> None:
             },
         }
     )
+    # AML.M0015 containment — isolate labeled agent pods (observability scrape + DNS only).
+    docs.append(
+        {
+            "apiVersion": "networking.k8s.io/v1",
+            "kind": "NetworkPolicy",
+            "metadata": {
+                "name": "agent-quarantine",
+                "namespace": "agentic-app",
+                "labels": {
+                    "app.kubernetes.io/part-of": "vanguard",
+                    "vanguard.io/playbook": "aml-m0015",
+                },
+            },
+            "spec": {
+                "podSelector": {"matchLabels": {"vanguard.io/quarantine": "true"}},
+                "policyTypes": ["Ingress", "Egress"],
+                "ingress": [
+                    {
+                        "from": [
+                            {
+                                "namespaceSelector": {
+                                    "matchLabels": {
+                                        "kubernetes.io/metadata.name": "observability"
+                                    }
+                                }
+                            }
+                        ],
+                        "ports": [{"protocol": "TCP", "port": 9090}],
+                    }
+                ],
+                "egress": [
+                    {
+                        "to": [
+                            {
+                                "namespaceSelector": {
+                                    "matchLabels": {
+                                        "kubernetes.io/metadata.name": "kube-system"
+                                    }
+                                }
+                            }
+                        ],
+                        "ports": [
+                            {"protocol": "UDP", "port": 53},
+                            {"protocol": "TCP", "port": 53},
+                        ],
+                    }
+                ],
+            },
+        }
+    )
     write(
         OUT_BASE / "networkpolicies.yaml",
         "\n---\n".join(_dump(d).rstrip() for d in docs) + "\n",

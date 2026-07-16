@@ -1,3 +1,4 @@
 # docs/
 
-Architecture ADRs, mission scenarios, and the forward-deployed playbook translating partner requirements into platform capabilities.
+Architecture ADRs, mission scenarios, forward-deployed playbook, and Phase 14
+validation artifacts (`docs/validation/` — walkthrough, checklist, gap register, Go/No-Go).

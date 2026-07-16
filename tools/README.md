@@ -11,4 +11,5 @@ Repo-level build tooling (not application code):
 - `check_cicd_gates.py` — G-015/G-019 Action SHA pins, localhost DAST, planted fixtures
 - `link_load_report.py` — bind K6 summaries to G-011 workload-manifest (dataset + code version)
 - `recovery_set.py` / `generate_recovery_manifest.py` — G-006 signed recovery-set manifests
+- `run_section14_walkthrough.py` — Phase 14 Local walkthrough runner → `docs/validation/`
 

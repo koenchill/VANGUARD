@@ -29,15 +29,18 @@ jobs:
         with:
           config: p/default
 
-      - name: Trivy SCA + misconfig
+      - name: Trivy SCA + misconfig (SARIF report)
         uses: aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8
         with:
           scan-type: fs
           scan-ref: .
-          exit-code: "1"
+          # Report CRITICAL/HIGH/MEDIUM; do not fail here so SARIF always uploads.
+          exit-code: "0"
           severity: CRITICAL,HIGH,MEDIUM
           format: sarif
           output: trivy-nightly.sarif
+          scanners: vuln,misconfig
+          skip-dirs: security/sast-sca-dast/fixtures/planted
 
       - name: Upload Trivy SARIF
         if: always()
@@ -45,6 +48,18 @@ jobs:
         with:
           name: trivy-nightly-${{ github.sha }}
           path: trivy-nightly.sarif
+
+      # Align fail gate with security/sast-sca-dast/finding-policy.yaml (CRITICAL/HIGH only).
+      - name: Trivy SCA gate (CRITICAL/HIGH)
+        uses: aquasecurity/trivy-action@6e7b7d1fd3e4fef0c5fa8cce1229c54b2c9bd0d8
+        with:
+          scan-type: fs
+          scan-ref: .
+          exit-code: "1"
+          severity: CRITICAL,HIGH
+          format: table
+          scanners: vuln,misconfig
+          skip-dirs: security/sast-sca-dast/fixtures/planted
 
   nightly-dast:
     needs: nightly-sast-sca

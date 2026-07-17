@@ -1,0 +1,153 @@
+{
+  "generated_at": "2026-07-17T00:19:05.472108+00:00",
+  "assurance_boundary": "G-001 portfolio Local ingest\u2192Grafana contract \u2014 not Cloud-Integration / not ATO",
+  "overall_passed": true,
+  "pipeline": [
+    "raw enterprise files",
+    "landing/raw + checksum gate",
+    "curation metadata (landed)",
+    "stage_candidate + promote (active)",
+    "mart projection fct_curation_health",
+    "Grafana MissionBI-Trino dashboard contract",
+    "RLS-simulated dashboard view"
+  ],
+  "steps": [
+    {
+      "id": "raw_enterprise_ingest",
+      "ok": true,
+      "batch_id": "enterprise-raw-001",
+      "path": "bulk",
+      "landed_count": 3,
+      "dataset_versions": [
+        "bulk-enterprise-raw-001-assets.parquet",
+        "bulk-enterprise-raw-001-events.parquet",
+        "bulk-enterprise-raw-001-telemetry.json"
+      ],
+      "landing_keys": [
+        "landing/raw/enterprise-raw-001/mission_alpha/assets.parquet",
+        "landing/raw/enterprise-raw-001/mission_alpha/events.parquet",
+        "landing/raw/enterprise-raw-001/mission_alpha/telemetry.json"
+      ],
+      "stages": [
+        "landed",
+        "landed",
+        "landed"
+      ]
+    },
+    {
+      "id": "curate_and_promote",
+      "ok": true,
+      "previous_active": null,
+      "active_dataset_version": "curated-enterprise-raw-001",
+      "queryable_version": "curated-enterprise-raw-001",
+      "lineage_parent": "bulk-enterprise-raw-001-assets.parquet",
+      "quality_score": 0.96
+    },
+    {
+      "id": "mart_projection_fct_curation_health",
+      "ok": true,
+      "trino_relation": "mission_marts.reporting.fct_curation_health",
+      "funnel": {
+        "raw_landed": 3,
+        "approved_active": 1,
+        "rejected_quarantine": 0
+      },
+      "row_count": 3,
+      "note": "Local projection \u2014 not a live Trino query"
+    },
+    {
+      "id": "grafana_mission_bi_contract",
+      "ok": true,
+      "missionbi_trino": {
+        "oauthPassThru": true,
+        "catalog": "mission_marts",
+        "ok": true
+      },
+      "never_query_raw_zones": [
+        "raw_lake",
+        "bronze",
+        "silver",
+        "gold_facts"
+      ],
+      "dashboards": [
+        {
+          "id": "curation_health",
+          "title": "Curation Pipeline Health",
+          "ok": true,
+          "path": "analytics/grafana/dashboards/curation_health.json",
+          "trino_relation": "mission_marts.reporting.fct_curation_health",
+          "panel_count": 5,
+          "datasource_uids": [
+            "MissionBI-Trino"
+          ],
+          "metrics_match_catalog": true,
+          "sql_binds_mart": true
+        },
+        {
+          "id": "data_quality_drift",
+          "title": "Data Quality & Drift",
+          "ok": true,
+          "path": "analytics/grafana/dashboards/data_quality_drift.json",
+          "trino_relation": "mission_marts.reporting.fct_data_quality",
+          "panel_count": 3,
+          "datasource_uids": [
+            "MissionBI-Trino"
+          ],
+          "metrics_match_catalog": true,
+          "sql_binds_mart": true
+        },
+        {
+          "id": "security_compliance",
+          "title": "Security & Compliance Posture",
+          "ok": true,
+          "path": "analytics/grafana/dashboards/security_compliance.json",
+          "trino_relation": "mission_marts.reporting.fct_security_compliance",
+          "panel_count": 4,
+          "datasource_uids": [
+            "MissionBI-Trino"
+          ],
+          "metrics_match_catalog": true,
+          "sql_binds_mart": true
+        },
+        {
+          "id": "mission_agent_evaluation",
+          "title": "Mission / Agent Evaluation",
+          "ok": true,
+          "path": "analytics/grafana/dashboards/mission_agent_evaluation.json",
+          "trino_relation": "mission_marts.reporting.fct_mission_agent_eval",
+          "panel_count": 5,
+          "datasource_uids": [
+            "MissionBI-Trino"
+          ],
+          "metrics_match_catalog": true,
+          "sql_binds_mart": true
+        }
+      ]
+    },
+    {
+      "id": "grafana_rls_simulated_view",
+      "ok": true,
+      "analyst_alpha": {
+        "name": "analyst.alpha@mission.internal",
+        "rows_visible": 2,
+        "dataset_versions": [
+          "curated-enterprise-raw-001",
+          "landed-batch-n3"
+        ]
+      },
+      "analyst_bravo": {
+        "name": "analyst.bravo@mission.internal",
+        "rows_visible": 1,
+        "dataset_versions": [
+          "other-mission-secret"
+        ]
+      },
+      "fail_closed_without_identity": true,
+      "note": "Simulates oauthPassThru \u2192 OPA/Trino RLS; not a live Grafana session"
+    }
+  ],
+  "reports": {
+    "json": "docs\\validation\\ingest-to-grafana-report.json",
+    "md": "docs\\validation\\ingest-to-grafana-report.md"
+  }
+}

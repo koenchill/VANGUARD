@@ -32,6 +32,23 @@ Stop:
 | Grafana `:33000` | Renders the four Mission BI dashboards with real graphs |
 | Seed | Generated from `bi_metrics.yaml` + last `ingest-to-grafana` report snapshot |
 
+## Catalog pages (Playlists / Library / Snapshots / Public)
+
+Empty Grafana catalog pages (dinosaur placeholders) can be filled with Local Mission BI content:
+
+```powershell
+.\scripts\seed-grafana-catalog.ps1
+```
+
+| Page | Seeded content |
+|------|----------------|
+| Playlists | **Mission BI — Local Freeze Rotation** (5 dashboards, 1m interval) |
+| Library panels | Mart stats: curation throughput, quality score, stream events landed |
+| Snapshots | Point-in-time snapshots of curation, quality, and live stream boards |
+| Public dashboards | Public Local shares for the same three boards |
+
+Assurance: G-001 Local only — not Cloud-Integration / not ATO.
+
 ## Live streaming (integrated-source assumption)
 
 ```powershell

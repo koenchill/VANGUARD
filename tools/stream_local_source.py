@@ -93,6 +93,17 @@ def ensure_stream_schema() -> None:
         );
         CREATE INDEX IF NOT EXISTS stream_events_time_idx
           ON reporting.stream_events (event_time DESC);
+        CREATE OR REPLACE VIEW reporting.fct_stream_landing AS
+          SELECT
+            event_time AS time,
+            mechanism,
+            landing_status,
+            source_system,
+            mission_id,
+            payload_bytes,
+            batch_id,
+            object_key
+          FROM reporting.stream_events;
         """
     )
 

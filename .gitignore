@@ -3,6 +3,7 @@
 Thumbs.db
 *.swp
 *~
+~$*.docx
 .idea/
 .vscode/
 !.vscode/extensions.json

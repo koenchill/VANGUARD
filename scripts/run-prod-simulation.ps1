@@ -18,6 +18,6 @@ $Py = & "$PSScriptRoot\ensure-venv.ps1" @ensureArgs
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 $env:PYTHONPATH = "$RepoRoot"
-Write-Host "VANGUARD prod-simulation -> $Py -m pytest tests/production-simulation -v --tb=short"
+Write-Host "# prod-simulation: $Py -m pytest tests/production-simulation -v --tb=short"
 & $Py -m pytest tests/production-simulation -v --tb=short
 exit $LASTEXITCODE

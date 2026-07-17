@@ -24,7 +24,7 @@ if ($GatewayPort -le 0) {
         $GatewayPort = 8000
     } else {
         $GatewayPort = 18010
-        Write-Host "Host :8000 is busy; using VANGUARD_GATEWAY_PORT=$GatewayPort for smoke"
+        Write-Host "# smoke: host port 8000 busy; VANGUARD_GATEWAY_PORT=$GatewayPort"
     }
 }
 $env:VANGUARD_GATEWAY_PORT = "$GatewayPort"
@@ -44,6 +44,11 @@ $mimicArgs = @(
 )
 if ($KeepGateway) { $mimicArgs += "--keep-gateway" }
 
-Write-Host "VANGUARD smoke -> $Py tools/run_mimic_prod.py $($mimicArgs -join ' ') (port $GatewayPort)"
+Write-Host "# smoke: $Py tools/run_mimic_prod.py $($mimicArgs -join ' ') gateway_port=$GatewayPort"
 & $Py tools/run_mimic_prod.py @mimicArgs
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "# smoke: PASS — see docs/validation/mimic-prod-report.md"
+} else {
+    Write-Host "# smoke: FAIL — exit $LASTEXITCODE"
+}
 exit $LASTEXITCODE

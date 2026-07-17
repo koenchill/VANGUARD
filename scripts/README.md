@@ -57,6 +57,8 @@ chmod +x scripts/*.sh
 
 Reports: `docs/validation/mimic-prod-report.{json,md}`.
 
+Operator log lines are prefixed with `#` so accidental paste into PowerShell is treated as a comment (not re-executed).
+
 Recreate a clean venv:
 
 ```powershell

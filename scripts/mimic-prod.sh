@@ -23,5 +23,5 @@ for arg in "$@"; do
 done
 
 PY="$(./scripts/ensure-venv.sh "${FORCE[@]}")"
-echo "VANGUARD mimic-prod → $PY tools/run_mimic_prod.py --skip-deps ${PASSTHRU[*]}"
+echo "# mimic-prod: $PY tools/run_mimic_prod.py --skip-deps ${PASSTHRU[*]}"
 exec "$PY" tools/run_mimic_prod.py --skip-deps "${PASSTHRU[@]}"

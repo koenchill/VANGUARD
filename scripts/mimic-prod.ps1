@@ -37,6 +37,6 @@ if ($SkipWalkthrough) { $argsList += "--skip-walkthrough" }
 if ($Quick) { $argsList += "--quick" }
 if ($KeepGateway) { $argsList += "--keep-gateway" }
 
-Write-Host "VANGUARD mimic-prod -> $Py tools/run_mimic_prod.py $($argsList -join ' ')"
+Write-Host "# mimic-prod: $Py tools/run_mimic_prod.py $($argsList -join ' ')"
 & $Py tools/run_mimic_prod.py @argsList
 exit $LASTEXITCODE

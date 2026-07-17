@@ -78,7 +78,7 @@ def create_venv(*, force: bool = False) -> Path:
         if ver < (3, 11):
             last_err = f"{base} is Python {ver[0]}.{ver[1]} (<3.11)"
             continue
-        print(f"Creating {VENV} with {' '.join(base)} (Python {ver[0]}.{ver[1]})", file=sys.stderr)
+        print(f"# ensure-venv: creating {VENV} with {' '.join(base)} (Python {ver[0]}.{ver[1]})", file=sys.stderr)
         proc = subprocess.run([*base, "-m", "venv", str(VENV)], cwd=REPO)
         if proc.returncode == 0 and venv_python().is_file():
             return venv_python()
@@ -91,7 +91,7 @@ def create_venv(*, force: bool = False) -> Path:
 
 
 def install_requirements(py: Path) -> None:
-    print(f"Installing {REQUIREMENTS.relative_to(REPO)} into .venv …", file=sys.stderr)
+    print(f"# ensure-venv: installing {REQUIREMENTS.relative_to(REPO)} into .venv", file=sys.stderr)
     subprocess.run(
         [str(py), "-m", "pip", "install", "-q", "--upgrade", "pip"],
         cwd=REPO,

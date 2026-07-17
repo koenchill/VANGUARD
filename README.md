@@ -23,13 +23,33 @@ Forward-deployed agentic AI platform — **portfolio reference architecture** de
 | `.gitignore` | Ignore patterns for TF state, secrets, caches |
 | `tools/` | Repo build tooling (resource-contract renderer) — not app code |
 
-Application, infrastructure, security, tests, and docs live under dedicated top-level folders (`app/`, `infra/`, `security/`, `tests/`, `docs/`, `analytics/`, `backup-dr/`). **Do not place application source or Terraform at the repo root.**
+Application, infrastructure, security, tests, and docs live under dedicated top-level folders (`app/`, `infra/`, `security/`, `tests/`, `docs/`, `analytics/`, `backup-dr/`, `scripts/`). **Do not place application source or Terraform at the repo root.**
 
 ## Current build phase
 
-**Phase 14 — Full validation** (complete on `dev`): Section 14 Local walkthrough all PASS (100 pytest); deliverables checklist evidence-linked; gap register reconciled (Phase 2 Local closed; Phase 3 Cloud / Phase 4 org remain open); Go for portfolio freeze / No-Go for ATO.
+**Phase 14 — Full validation** (complete on `main` / `dev`): Section 14 Local walkthrough all PASS; deliverables checklist evidence-linked; gap register reconciled (Phase 2 Local closed; Phase 3 Cloud / Phase 4 org remain open); Go for portfolio freeze / No-Go for ATO.
 
-Build phases **0–14 complete** on `dev`. See `docs/validation/go-no-go.md`.
+Build phases **0–14 complete**. See `docs/validation/go-no-go.md`.
+
+## Mimic production locally
+
+Scripts bootstrap a repo-local **`.venv`** (Python **3.11+**) before smoke / prod-sim:
+
+```powershell
+.\scripts\ensure-venv.ps1
+.\scripts\run-smoke.ps1
+.\scripts\run-prod-simulation.ps1
+.\scripts\mimic-prod.ps1 -Quick
+```
+
+```bash
+./scripts/ensure-venv.sh
+./scripts/run-smoke.sh
+./scripts/run-prod-simulation.sh
+./scripts/mimic-prod.sh --quick
+```
+
+Details: `scripts/README.md`. Report: `docs/validation/mimic-prod-report.md`.
 
 ## Quick facts
 

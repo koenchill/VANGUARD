@@ -1,0 +1,46 @@
+# Local Grafana + Postgres mart stand-in (no cloud / no Trino).
+# Mission BI dashboards query reporting.* tables seeded with Local demo data.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vanguard-grafana-pg
+    environment:
+      POSTGRES_USER: vanguard
+      POSTGRES_PASSWORD: vanguard
+      POSTGRES_DB: mission_marts
+    ports:
+      - "15432:5432"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d:ro
+      - vanguard_grafana_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vanguard -d mission_marts"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: vanguard-grafana-local
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "33000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: vanguard
+      GF_USERS_DEFAULT_THEME: light
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/mission-bi/curation_health.json
+      GF_LOG_LEVEL: warn
+    volumes:
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./dashboards:/var/lib/grafana/dashboards/mission-bi:ro
+      - vanguard_grafana_data:/var/lib/grafana
+
+volumes:
+  vanguard_grafana_pg:
+  vanguard_grafana_data:

@@ -1,0 +1,189 @@
+{
+  "generated_at": "2026-07-17T00:41:47.935512+00:00",
+  "assurance_boundary": "G-001 Local SQL optimization lab (Postgres mart stand-in) \u2014 not cloud Trino",
+  "overall_passed": true,
+  "target": "postgres://vanguard@127.0.0.1:15432/mission_marts",
+  "row_count_metric_series": 5480,
+  "indexes_applied": [
+    {
+      "id": "idx_mission_metric_time",
+      "sql": "CREATE INDEX IF NOT EXISTS metric_series_mission_metric_time_idx ON reporting.metric_series (mission_id, dashboard_id, metric_id, time DESC);",
+      "rationale": "Supports RLS-shaped + Grafana latest-stat access patterns"
+    },
+    {
+      "id": "idx_metric_only",
+      "sql": "CREATE INDEX IF NOT EXISTS metric_series_metric_id_time_idx ON reporting.metric_series (metric_id, time);",
+      "rationale": "Supports fct_* view filters that only constrain metric_id"
+    }
+  ],
+  "before": [
+    {
+      "id": "bi_dashboard_filtered",
+      "label": "Grafana panel: selective metric series (desired Index Scan)",
+      "sql": "SELECT time AS \"time\", value FROM reporting.metric_series WHERE dashboard_id = 'curation_health'   AND metric_id = 'pii_scrub_rate' ORDER BY 1",
+      "expect_index": true,
+      "has_seq_scan": false,
+      "has_index_scan": true,
+      "passes_full_scan_gate": true,
+      "plan_preview": "QUERY PLAN                                                                          \n--------------------------------------------------------------------------------------------------------------------------------------------------------------\n Sort  (cost=67.60..67.69 rows=35 width=16) (actual time=0.089..0.091 rows=37 loops=1)\n   Sort Key: \"time\"\n   Sort Method: quicksort  Memory: 26kB\n   Buffers: shared hit=10\n   ->  Bitmap Heap Scan on metric_series  (cost=4.64..66.70 rows=35 width=16) (actual time=0.028..0.045 rows=37 loops=1)\n         Recheck Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))\n         Heap Blocks: exact=5\n         Buffers: shared hit=7\n         ->  Bitmap Index Scan on metric_series_dashboard_id_metric_id_time_idx  (cost=0.00..4.63 rows=35 width=0) (actual time=0.022..0.022 rows=37 loops=1)\n               Index Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))",
+      "ok": true
+    },
+    {
+      "id": "bi_dashboard_hot_metric",
+      "label": "Hot streamed metric (may Seq Scan when selectivity is high \u2014 OK)",
+      "sql": "SELECT time AS \"time\", value FROM reporting.metric_series WHERE dashboard_id = 'curation_health'   AND metric_id = 'records_processed_per_day' ORDER BY 1",
+      "expect_index": false,
+      "has_seq_scan": true,
+      "has_index_scan": false,
+      "passes_full_scan_gate": false,
+      "plan_preview": "QUERY PLAN                                                      \n----------------------------------------------------------------------------------------------------------------------\n Sort  (cost=448.52..460.48 rows=4784 width=16) (actual time=1.514..1.644 rows=5048 loops=1)\n   Sort Key: \"time\"\n   Sort Method: quicksort  Memory: 390kB\n   Buffers: shared hit=77\n   ->  Seq Scan on metric_series  (cost=0.00..156.12 rows=4784 width=16) (actual time=0.006..0.691 rows=5048 loops=1)\n         Filter: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'records_processed_per_day'::text))\n         Rows Removed by Filter: 427\n         Buffers: shared hit=74\n Planning:\n   Buffers: shared hit=138",
+      "ok": true
+    },
+    {
+      "id": "bi_dashboard_unfiltered",
+      "label": "Anti-pattern: SELECT * without predicate (full scan risk)",
+      "sql": "SELECT * FROM reporting.metric_series",
+      "expect_index": false,
+      "has_seq_scan": true,
+      "has_index_scan": false,
+      "passes_full_scan_gate": false,
+      "plan_preview": "QUERY PLAN                                                   \n----------------------------------------------------------------------------------------------------------------\n Seq Scan on metric_series  (cost=0.00..128.75 rows=5475 width=71) (actual time=0.004..0.330 rows=5476 loops=1)\n   Buffers: shared hit=74\n Planning:\n   Buffers: shared hit=112\n Planning Time: 0.764 ms\n Execution Time: 0.499 ms\n(6 rows)",
+      "ok": true
+    },
+    {
+      "id": "mart_view_filtered",
+      "label": "fct_curation_health view with metric filter",
+      "sql": "SELECT time, value FROM reporting.fct_curation_health WHERE metric_id = 'pii_scrub_rate' ORDER BY time",
+      "expect_index": true,
+      "has_seq_scan": false,
+      "has_index_scan": true,
+      "passes_full_scan_gate": true,
+      "plan_preview": "QUERY PLAN                                                                          \n--------------------------------------------------------------------------------------------------------------------------------------------------------------\n Sort  (cost=67.60..67.69 rows=35 width=16) (actual time=0.094..0.095 rows=37 loops=1)\n   Sort Key: metric_series.\"time\"\n   Sort Method: quicksort  Memory: 26kB\n   Buffers: shared hit=10\n   ->  Bitmap Heap Scan on metric_series  (cost=4.64..66.70 rows=35 width=16) (actual time=0.031..0.048 rows=37 loops=1)\n         Recheck Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))\n         Heap Blocks: exact=5\n         Buffers: shared hit=7\n         ->  Bitmap Index Scan on metric_series_dashboard_id_metric_id_time_idx  (cost=0.00..4.63 rows=35 width=0) (actual time=0.023..0.024 rows=37 loops=1)\n               Index Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))",
+      "ok": true
+    },
+    {
+      "id": "latest_stat",
+      "label": "Grafana stat: latest value (ORDER BY time DESC LIMIT 1)",
+      "sql": "SELECT value FROM reporting.metric_series WHERE dashboard_id = 'curation_health'   AND metric_id = 'dedup_rate' ORDER BY time DESC LIMIT 1",
+      "expect_index": true,
+      "has_seq_scan": false,
+      "has_index_scan": true,
+      "passes_full_scan_gate": true,
+      "plan_preview": "QUERY PLAN                                                                                   \n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n Limit  (cost=0.28..2.39 rows=1 width=16) (actual time=0.029..0.029 rows=1 loops=1)\n   Buffers: shared hit=3\n   ->  Index Scan Backward using metric_series_dashboard_id_metric_id_time_idx on metric_series  (cost=0.28..88.94 rows=42 width=16) (actual time=0.028..0.028 rows=1 loops=1)\n         Index Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'dedup_rate'::text))\n         Buffers: shared hit=3\n Planning:\n   Buffers: shared hit=138\n Planning Time: 0.999 ms\n Execution Time: 0.081 ms\n(9 rows)",
+      "ok": true
+    },
+    {
+      "id": "mission_rls_shaped",
+      "label": "RLS-shaped filter (high selectivity \u2014 planner may correctly Seq Scan)",
+      "sql": "SELECT time, value FROM reporting.metric_series WHERE mission_id = 'mission-alpha'   AND dashboard_id = 'curation_health'   AND metric_id = 'records_processed_per_day' ORDER BY time",
+      "expect_index": false,
+      "has_seq_scan": true,
+      "has_index_scan": false,
+      "passes_full_scan_gate": false,
+      "plan_preview": "QUERY PLAN                                                                        \n---------------------------------------------------------------------------------------------------------------------------------------------------------\n Sort  (cost=358.67..366.77 rows=3239 width=16) (actual time=1.262..1.345 rows=3372 loops=1)\n   Sort Key: \"time\"\n   Sort Method: quicksort  Memory: 228kB\n   Buffers: shared hit=77\n   ->  Seq Scan on metric_series  (cost=0.00..169.81 rows=3239 width=16) (actual time=0.008..0.703 rows=3372 loops=1)\n         Filter: ((mission_id = 'mission-alpha'::text) AND (dashboard_id = 'curation_health'::text) AND (metric_id = 'records_processed_per_day'::text))\n         Rows Removed by Filter: 2104\n         Buffers: shared hit=74\n Planning:\n   Buffers: shared hit=138",
+      "ok": true
+    },
+    {
+      "id": "mission_rls_selective",
+      "label": "RLS-shaped selective window (should Index Scan)",
+      "sql": "SELECT time, value FROM reporting.metric_series WHERE mission_id = 'mission-bravo'   AND dashboard_id = 'curation_health'   AND metric_id = 'records_processed_per_day'   AND time > NOW() - INTERVAL '14 days' ORDER BY time",
+      "expect_index": true,
+      "has_seq_scan": false,
+      "has_index_scan": true,
+      "passes_full_scan_gate": true,
+      "plan_preview": "QUERY PLAN                                                                                                   \n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n Sort  (cost=104.05..104.61 rows=224 width=16) (actual time=0.143..0.146 rows=121 loops=1)\n   Sort Key: \"time\"\n   Sort Method: quicksort  Memory: 29kB\n   Buffers: shared hit=14\n   ->  Bitmap Heap Scan on metric_series  (cost=15.70..95.30 rows=224 width=16) (actual time=0.053..0.094 rows=121 loops=1)\n         Recheck Cond: ((mission_id = 'mission-bravo'::text) AND (dashboard_id = 'curation_health'::text) AND (metric_id = 'records_processed_per_day'::text) AND (\"time\" > (now() - '14 days'::interval)))\n         Heap Blocks: exact=8\n         Buffers: shared hit=11\n         ->  Bitmap Index Scan on metric_series_mission_metric_time_idx  (cost=0.00..15.65 rows=224 width=0) (actual time=0.046..0.046 rows=121 loops=1)\n               Index Cond: ((mission_id = 'mission-bravo'::text) AND (dashboard_id = 'curation_health'::text) AND (metric_id = 'records_processed_per_day'::text) AND (\"time\" > (now() - '14 days'::interval)))",
+      "ok": true
+    }
+  ],
+  "after": [
+    {
+      "id": "bi_dashboard_filtered",
+      "label": "Grafana panel: selective metric series (desired Index Scan)",
+      "sql": "SELECT time AS \"time\", value FROM reporting.metric_series WHERE dashboard_id = 'curation_health'   AND metric_id = 'pii_scrub_rate' ORDER BY 1",
+      "expect_index": true,
+      "has_seq_scan": false,
+      "has_index_scan": true,
+      "passes_full_scan_gate": true,
+      "plan_preview": "QUERY PLAN                                                                          \n--------------------------------------------------------------------------------------------------------------------------------------------------------------\n Sort  (cost=67.60..67.69 rows=35 width=16) (actual time=0.245..0.248 rows=37 loops=1)\n   Sort Key: \"time\"\n   Sort Method: quicksort  Memory: 26kB\n   Buffers: shared hit=10\n   ->  Bitmap Heap Scan on metric_series  (cost=4.64..66.70 rows=35 width=16) (actual time=0.104..0.144 rows=37 loops=1)\n         Recheck Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))\n         Heap Blocks: exact=5\n         Buffers: shared hit=7\n         ->  Bitmap Index Scan on metric_series_dashboard_id_metric_id_time_idx  (cost=0.00..4.63 rows=35 width=0) (actual time=0.093..0.093 rows=37 loops=1)\n               Index Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))",
+      "ok": true
+    },
+    {
+      "id": "bi_dashboard_hot_metric",
+      "label": "Hot streamed metric (may Seq Scan when selectivity is high \u2014 OK)",
+      "sql": "SELECT time AS \"time\", value FROM reporting.metric_series WHERE dashboard_id = 'curation_health'   AND metric_id = 'records_processed_per_day' ORDER BY 1",
+      "expect_index": false,
+      "has_seq_scan": true,
+      "has_index_scan": false,
+      "passes_full_scan_gate": false,
+      "plan_preview": "QUERY PLAN                                                      \n----------------------------------------------------------------------------------------------------------------------\n Sort  (cost=448.55..460.51 rows=4784 width=16) (actual time=2.543..2.779 rows=5048 loops=1)\n   Sort Key: \"time\"\n   Sort Method: quicksort  Memory: 390kB\n   Buffers: shared hit=77\n   ->  Seq Scan on metric_series  (cost=0.00..156.16 rows=4784 width=16) (actual time=0.012..1.131 rows=5048 loops=1)\n         Filter: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'records_processed_per_day'::text))\n         Rows Removed by Filter: 430\n         Buffers: shared hit=74\n Planning:\n   Buffers: shared hit=138",
+      "ok": true
+    },
+    {
+      "id": "bi_dashboard_unfiltered",
+      "label": "Anti-pattern: SELECT * without predicate (full scan risk)",
+      "sql": "SELECT * FROM reporting.metric_series",
+      "expect_index": false,
+      "has_seq_scan": true,
+      "has_index_scan": false,
+      "passes_full_scan_gate": false,
+      "plan_preview": "QUERY PLAN                                                   \n----------------------------------------------------------------------------------------------------------------\n Seq Scan on metric_series  (cost=0.00..128.77 rows=5477 width=71) (actual time=0.011..0.673 rows=5478 loops=1)\n   Buffers: shared hit=74\n Planning:\n   Buffers: shared hit=112\n Planning Time: 1.623 ms\n Execution Time: 1.067 ms\n(6 rows)",
+      "ok": true
+    },
+    {
+      "id": "mart_view_filtered",
+      "label": "fct_curation_health view with metric filter",
+      "sql": "SELECT time, value FROM reporting.fct_curation_health WHERE metric_id = 'pii_scrub_rate' ORDER BY time",
+      "expect_index": true,
+      "has_seq_scan": false,
+      "has_index_scan": true,
+      "passes_full_scan_gate": true,
+      "plan_preview": "QUERY PLAN                                                                          \n--------------------------------------------------------------------------------------------------------------------------------------------------------------\n Sort  (cost=67.60..67.69 rows=35 width=16) (actual time=0.150..0.152 rows=37 loops=1)\n   Sort Key: metric_series.\"time\"\n   Sort Method: quicksort  Memory: 26kB\n   Buffers: shared hit=10\n   ->  Bitmap Heap Scan on metric_series  (cost=4.64..66.70 rows=35 width=16) (actual time=0.048..0.074 rows=37 loops=1)\n         Recheck Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))\n         Heap Blocks: exact=5\n         Buffers: shared hit=7\n         ->  Bitmap Index Scan on metric_series_dashboard_id_metric_id_time_idx  (cost=0.00..4.63 rows=35 width=0) (actual time=0.037..0.037 rows=37 loops=1)\n               Index Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))",
+      "ok": true
+    },
+    {
+      "id": "latest_stat",
+      "label": "Grafana stat: latest value (ORDER BY time DESC LIMIT 1)",
+      "sql": "SELECT value FROM reporting.metric_series WHERE dashboard_id = 'curation_health'   AND metric_id = 'dedup_rate' ORDER BY time DESC LIMIT 1",
+      "expect_index": true,
+      "has_seq_scan": false,
+      "has_index_scan": true,
+      "passes_full_scan_gate": true,
+      "plan_preview": "QUERY PLAN                                                                                   \n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n Limit  (cost=0.28..2.40 rows=1 width=16) (actual time=0.042..0.043 rows=1 loops=1)\n   Buffers: shared hit=3\n   ->  Index Scan Backward using metric_series_dashboard_id_metric_id_time_idx on metric_series  (cost=0.28..91.45 rows=43 width=16) (actual time=0.041..0.041 rows=1 loops=1)\n         Index Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'dedup_rate'::text))\n         Buffers: shared hit=3\n Planning:\n   Buffers: shared hit=138\n Planning Time: 1.671 ms\n Execution Time: 0.121 ms\n(9 rows)",
+      "ok": true
+    },
+    {
+      "id": "mission_rls_shaped",
+      "label": "RLS-shaped filter (high selectivity \u2014 planner may correctly Seq Scan)",
+      "sql": "SELECT time, value FROM reporting.metric_series WHERE mission_id = 'mission-alpha'   AND dashboard_id = 'curation_health'   AND metric_id = 'records_processed_per_day' ORDER BY time",
+      "expect_index": false,
+      "has_seq_scan": true,
+      "has_index_scan": false,
+      "passes_full_scan_gate": false,
+      "plan_preview": "QUERY PLAN                                                                        \n---------------------------------------------------------------------------------------------------------------------------------------------------------\n Sort  (cost=358.70..366.80 rows=3239 width=16) (actual time=1.496..1.622 rows=3372 loops=1)\n   Sort Key: \"time\"\n   Sort Method: quicksort  Memory: 228kB\n   Buffers: shared hit=77\n   ->  Seq Scan on metric_series  (cost=0.00..169.85 rows=3239 width=16) (actual time=0.007..0.822 rows=3372 loops=1)\n         Filter: ((mission_id = 'mission-alpha'::text) AND (dashboard_id = 'curation_health'::text) AND (metric_id = 'records_processed_per_day'::text))\n         Rows Removed by Filter: 2107\n         Buffers: shared hit=74\n Planning:\n   Buffers: shared hit=138",
+      "ok": true
+    },
+    {
+      "id": "mission_rls_selective",
+      "label": "RLS-shaped selective window (should Index Scan)",
+      "sql": "SELECT time, value FROM reporting.metric_series WHERE mission_id = 'mission-bravo'   AND dashboard_id = 'curation_health'   AND metric_id = 'records_processed_per_day'   AND time > NOW() - INTERVAL '14 days' ORDER BY time",
+      "expect_index": true,
+      "has_seq_scan": false,
+      "has_index_scan": true,
+      "passes_full_scan_gate": true,
+      "plan_preview": "QUERY PLAN                                                                                                   \n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n Sort  (cost=104.05..104.61 rows=224 width=16) (actual time=0.182..0.186 rows=121 loops=1)\n   Sort Key: \"time\"\n   Sort Method: quicksort  Memory: 29kB\n   Buffers: shared hit=14\n   ->  Bitmap Heap Scan on metric_series  (cost=15.70..95.30 rows=224 width=16) (actual time=0.058..0.106 rows=121 loops=1)\n         Recheck Cond: ((mission_id = 'mission-bravo'::text) AND (dashboard_id = 'curation_health'::text) AND (metric_id = 'records_processed_per_day'::text) AND (\"time\" > (now() - '14 days'::interval)))\n         Heap Blocks: exact=8\n         Buffers: shared hit=11\n         ->  Bitmap Index Scan on metric_series_mission_metric_time_idx  (cost=0.00..15.65 rows=224 width=0) (actual time=0.052..0.053 rows=121 loops=1)\n               Index Cond: ((mission_id = 'mission-bravo'::text) AND (dashboard_id = 'curation_health'::text) AND (metric_id = 'records_processed_per_day'::text) AND (\"time\" > (now() - '14 days'::interval)))",
+      "ok": true
+    }
+  ],
+  "full_scan_gate": {
+    "fixture_full_scan_detected": true,
+    "filtered_query_passes_gate": true,
+    "filtered_plan_preview": "QUERY PLAN                                                                          \n--------------------------------------------------------------------------------------------------------------------------------------------------------------\n Sort  (cost=67.60..67.69 rows=35 width=16) (actual time=0.113..0.117 rows=37 loops=1)\n   Sort Key: \"time\"\n   Sort Method: quicksort  Memory: 26kB\n   Buffers: shared hit=10\n   ->  Bitmap Heap Scan on metric_series  (cost=4.64..66.70 rows=35 width=16) (actual time=0.035..0.057 rows=37 loops=1)\n         Recheck Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))",
+    "check_tool": "tools/check_explain_full_scan.py"
+  },
+  "recommendations": [
+    "BI must query reporting marts with dashboard_id + metric_id predicates (never SELECT * on raw/bronze).",
+    "Keep composite indexes aligned to Grafana panel SQL and RLS mission_id filters.",
+    "Reject plans containing Seq Scan / Table Scan via tools/check_explain_full_scan.py in CI.",
+    "Prefer pre-aggregated fct_* marts (dbt) over scanning curated_datasets in dashboards."
+  ]
+}

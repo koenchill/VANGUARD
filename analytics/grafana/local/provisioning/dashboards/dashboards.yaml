@@ -1,0 +1,11 @@
+apiVersion: 1
+providers:
+- name: mission-bi-local
+  orgId: 1
+  folder: Mission BI
+  folderUid: mission-bi
+  type: file
+  disableDeletion: false
+  updateIntervalSeconds: 10
+  options:
+    path: /var/lib/grafana/dashboards/mission-bi

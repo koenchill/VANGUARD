@@ -1,0 +1,152 @@
+{
+  "uid": "security_compliance",
+  "title": "Security & Compliance Posture (Local)",
+  "tags": [
+    "mission-bi",
+    "vanguard",
+    "security_compliance",
+    "local",
+    "no-cloud"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "SAST/SCA/DAST pass-rate trend",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "MissionBI-Local"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "MissionBI-Local"
+          },
+          "format": "time_series",
+          "rawSql": "SELECT time AS \"time\", value FROM reporting.metric_series WHERE dashboard_id = 'security_compliance' AND metric_id = 'sast_sca_dast_pass_rate' ORDER BY 1",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "auto"
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "STRIDE residual-risk summary",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "MissionBI-Local"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "MissionBI-Local"
+          },
+          "format": "table",
+          "rawSql": "SELECT value FROM reporting.metric_series WHERE dashboard_id = 'security_compliance' AND metric_id = 'stride_residual_risk' ORDER BY time DESC LIMIT 1",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "NIST AI RMF control-coverage %",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "MissionBI-Local"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "MissionBI-Local"
+          },
+          "format": "table",
+          "rawSql": "SELECT value FROM reporting.metric_series WHERE dashboard_id = 'security_compliance' AND metric_id = 'nist_ai_rmf_coverage' ORDER BY time DESC LIMIT 1",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Backup/DR restore-test pass rate",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "MissionBI-Local"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "MissionBI-Local"
+          },
+          "format": "time_series",
+          "rawSql": "SELECT time AS \"time\", value FROM reporting.metric_series WHERE dashboard_id = 'security_compliance' AND metric_id = 'backup_dr_restore_pass_rate' ORDER BY 1",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "auto"
+          }
+        }
+      }
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "editable": false
+}

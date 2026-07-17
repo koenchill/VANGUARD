@@ -1,0 +1,169 @@
+{
+  "uid": "mission_agent_evaluation",
+  "title": "Mission / Agent Evaluation (Local)",
+  "tags": [
+    "mission-bi",
+    "vanguard",
+    "mission_agent_evaluation",
+    "local",
+    "no-cloud"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Task-completion rate",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "MissionBI-Local"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "MissionBI-Local"
+          },
+          "format": "time_series",
+          "rawSql": "SELECT time AS \"time\", value FROM reporting.metric_series WHERE dashboard_id = 'mission_agent_evaluation' AND metric_id = 'task_completion_rate' ORDER BY 1",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "auto"
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Hallucination / faithfulness scores",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "MissionBI-Local"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "MissionBI-Local"
+          },
+          "format": "table",
+          "rawSql": "SELECT value FROM reporting.metric_series WHERE dashboard_id = 'mission_agent_evaluation' AND metric_id = 'faithfulness_score' ORDER BY time DESC LIMIT 1",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Cost-per-inference",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "MissionBI-Local"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "MissionBI-Local"
+          },
+          "format": "table",
+          "rawSql": "SELECT value FROM reporting.metric_series WHERE dashboard_id = 'mission_agent_evaluation' AND metric_id = 'cost_per_inference' ORDER BY time DESC LIMIT 1",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Forward-deployed mission-scenario outcomes",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "MissionBI-Local"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "MissionBI-Local"
+          },
+          "format": "table",
+          "rawSql": "SELECT value FROM reporting.metric_series WHERE dashboard_id = 'mission_agent_evaluation' AND metric_id = 'mission_scenario_outcomes' ORDER BY time DESC LIMIT 1",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Per-agent-step telemetry",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "MissionBI-Local"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "postgres",
+            "uid": "MissionBI-Local"
+          },
+          "format": "table",
+          "rawSql": "SELECT value FROM reporting.metric_series WHERE dashboard_id = 'mission_agent_evaluation' AND metric_id = 'per_agent_step_telemetry' ORDER BY time DESC LIMIT 1",
+          "rawQuery": true
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "editable": false
+}

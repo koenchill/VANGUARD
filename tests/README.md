@@ -19,3 +19,16 @@ pip install -r tests/requirements.txt
 ```
 
 `tests/requirements.txt` pins `PyYAML` + `jsonschema` because unit tests import `tools/render_resources.py`.
+
+## Mimic production (Local)
+
+Operator scripts create/use **`.venv`** first, then run smoke / prod-sim:
+
+```powershell
+.\scripts\ensure-venv.ps1
+.\scripts\run-smoke.ps1
+.\scripts\run-prod-simulation.ps1
+```
+
+See `scripts/README.md`. Report: `docs/validation/mimic-prod-report.md`.
+This is portfolio Local evidence (G-001), not live tenant / ATO proof.

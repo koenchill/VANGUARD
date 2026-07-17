@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16T22:52:42.958624+00:00",
+  "generated_at": "2026-07-17T00:43:18.715186+00:00",
   "assurance_boundary": "G-001 portfolio Local evidence \u2014 not ATO",
   "all_phases_passed": true,
   "phases": [
@@ -12,7 +12,7 @@
       "notes": "tfvars-only under infra/terraform/app/; baseline separations",
       "passed": true,
       "returncode": 0,
-      "summary": "5 passed in 1.68s",
+      "summary": "5 passed in 5.61s",
       "stderr_tail": []
     },
     {
@@ -24,7 +24,7 @@
       "notes": "G-007 renderer + digest SSOT",
       "passed": true,
       "returncode": 0,
-      "summary": "8 passed in 0.79s",
+      "summary": "8 passed in 4.92s",
       "stderr_tail": []
     },
     {
@@ -37,7 +37,7 @@
       "notes": "NodePools exclusive; no PowerBI in K8s; oauthPassThru",
       "passed": true,
       "returncode": 0,
-      "summary": "12 passed in 2.91s",
+      "summary": "12 passed in 9.10s",
       "stderr_tail": []
     },
     {
@@ -49,7 +49,7 @@
       "notes": "Kyverno/OPA/RuntimeClass artifacts; STRIDE present",
       "passed": true,
       "returncode": 0,
-      "summary": "8 passed in 0.03s",
+      "summary": "8 passed in 0.06s",
       "stderr_tail": []
     },
     {
@@ -61,7 +61,7 @@
       "notes": "Bulk vs ongoing; quarantine gate",
       "passed": true,
       "returncode": 0,
-      "summary": "6 passed in 0.27s",
+      "summary": "6 passed in 0.39s",
       "stderr_tail": []
     },
     {
@@ -74,7 +74,7 @@
       "notes": "G-014 atomic promotion fault-injection; EXPLAIN CI gate",
       "passed": true,
       "returncode": 0,
-      "summary": "9 passed in 0.28s",
+      "summary": "9 passed in 0.34s",
       "stderr_tail": []
     },
     {
@@ -86,7 +86,7 @@
       "notes": "Four dashboards \u00d7 2 paths; RLS distinct counts",
       "passed": true,
       "returncode": 0,
-      "summary": "8 passed in 0.04s",
+      "summary": "8 passed in 0.05s",
       "stderr_tail": []
     },
     {
@@ -110,7 +110,7 @@
       "notes": "G-015/G-019 planted fixtures caught; SHA pins",
       "passed": true,
       "returncode": 0,
-      "summary": "6 passed in 2.24s",
+      "summary": "6 passed in 4.84s",
       "stderr_tail": []
     },
     {
@@ -124,7 +124,7 @@
       "notes": "G-013 fail-closed; G-018 tamper/deletion/replay",
       "passed": true,
       "returncode": 0,
-      "summary": "25 passed in 0.32s",
+      "summary": "25 passed in 0.41s",
       "stderr_tail": []
     },
     {
@@ -136,7 +136,7 @@
       "notes": "Staging scenario Local runner",
       "passed": true,
       "returncode": 0,
-      "summary": "1 passed in 0.28s",
+      "summary": "1 passed in 0.42s",
       "stderr_tail": []
     },
     {
@@ -150,7 +150,7 @@
       "notes": "G-010/G-011 Local contracts; chaos HITL",
       "passed": true,
       "returncode": 0,
-      "summary": "12 passed in 0.33s",
+      "summary": "12 passed in 0.44s",
       "stderr_tail": []
     }
   ]

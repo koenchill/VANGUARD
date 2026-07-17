@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-07-17T00:40:48.094328+00:00",
+  "assurance_boundary": "G-001 portfolio Local mimic-prod \u2014 not Cloud-Integration / not ATO",
+  "code_version": "2f9c71f",
+  "overall_passed": true,
+  "stages": [
+    {
+      "stage": "deps",
+      "passed": true,
+      "skipped": true,
+      "detail": "--skip-deps"
+    },
+    {
+      "stage": "pyramid-core",
+      "passed": true,
+      "skipped": false,
+      "detail": "85 passed in 13.79s"
+    },
+    {
+      "stage": "gateway",
+      "passed": true,
+      "skipped": false,
+      "detail": "image=local/vanguard-gateway:mimic-prod probes ok on :18010"
+    },
+    {
+      "stage": "security",
+      "passed": true,
+      "skipped": false,
+      "detail": "cicd_gates rc=0; dast_localhost rc=0; live_headers=ok"
+    },
+    {
+      "stage": "load",
+      "passed": true,
+      "skipped": true,
+      "detail": "--skip-k6"
+    },
+    {
+      "stage": "resilience",
+      "passed": true,
+      "skipped": true,
+      "detail": "--skip-resilience"
+    },
+    {
+      "stage": "prod-sim",
+      "passed": true,
+      "skipped": true,
+      "detail": "--skip-prod-sim"
+    },
+    {
+      "stage": "walkthrough",
+      "passed": true,
+      "skipped": true,
+      "detail": "--skip-walkthrough"
+    }
+  ]
+}

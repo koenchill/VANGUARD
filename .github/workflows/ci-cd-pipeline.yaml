@@ -45,6 +45,7 @@ jobs:
           exit-code: "1"
           severity: CRITICAL,HIGH
           format: table
+          skip-dirs: security/sast-sca-dast/fixtures/planted
 
       - name: Generate SBOM
         run: |
@@ -73,7 +74,7 @@ jobs:
           python -m pip install --upgrade pip
           # Explicit pins (not only -r) so a bad requirements include cannot omit jsonschema.
           python -m pip install \
-            "pytest==8.3.5" \
+            "pytest==9.0.3" \
             "PyYAML==6.0.2" \
             "jsonschema==4.23.0" \
             "SQLAlchemy==2.0.40" \

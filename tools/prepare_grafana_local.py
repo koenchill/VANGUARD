@@ -75,6 +75,10 @@ def write_seed_sql() -> Path:
   mission_id text NOT NULL DEFAULT 'mission-alpha'
 );""",
         "CREATE INDEX ON reporting.metric_series (dashboard_id, metric_id, time);",
+        "CREATE INDEX IF NOT EXISTS metric_series_mission_metric_time_idx "
+        "ON reporting.metric_series (mission_id, dashboard_id, metric_id, time DESC);",
+        "CREATE INDEX IF NOT EXISTS metric_series_metric_id_time_idx "
+        "ON reporting.metric_series (metric_id, time);",
         "",
     ]
 

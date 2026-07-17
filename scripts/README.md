@@ -10,6 +10,7 @@ All runners **create/use repo-local `.venv`** first (prefer Python **3.11**, alr
 | `ensure-venv.ps1` / `ensure-venv.sh` | Create `.venv` + `pip install -r tests/requirements.txt` |
 | `run-ingest-to-grafana.ps1` / `.sh` | `.venv` → raw ingest → promote → Grafana Mission BI contract report |
 | `run-grafana-local.ps1` / `.sh` | Local Grafana UI at http://127.0.0.1:33000 (Postgres mart stand-in, no cloud) |
+| `run-data-stream.ps1` / `.sh` | Live CDC-style stream into Local Grafana (integrated-source assumption) |
 | `run-sql-optimize.ps1` / `.sh` | EXPLAIN ANALYZE lab + indexes on Local marts → `docs/validation/sql-optimization-report.md` |
 | `run-raw-ingest.ps1` / `run-raw-ingest.sh` | `.venv` → raw bulk/ongoing/quarantine demo + integration tests |
 | `run-smoke.ps1` / `run-smoke.sh` | `.venv` → unit/integration → live gateway smoke |

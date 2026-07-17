@@ -1,0 +1,117 @@
+{
+  "uid": "live_enterprise_stream",
+  "title": "Live Enterprise Stream (Local)",
+  "tags": ["mission-bi", "local", "streaming", "cdc"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "2s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Records processed / day (live)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT time AS \"time\", value FROM reporting.metric_series WHERE dashboard_id = 'curation_health' AND metric_id = 'records_processed_per_day' AND time > NOW() - INTERVAL '15 minutes' ORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "showPoints": "always",
+            "pointSize": 5
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Quality score trend (live)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT time AS \"time\", value FROM reporting.metric_series WHERE dashboard_id = 'data_quality_drift' AND metric_id = 'quality_score_trend' AND time > NOW() - INTERVAL '15 minutes' ORDER BY 1"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "showPoints": "always",
+            "pointSize": 5
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Events landed (15m)",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
+      "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) AS value FROM reporting.stream_events WHERE event_time > NOW() - INTERVAL '15 minutes'"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Latest event mechanism",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 8 },
+      "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT mechanism AS value FROM reporting.stream_events ORDER BY event_time DESC LIMIT 1"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Live CDC / ongoing landing events",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 12 },
+      "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "MissionBI-Local" },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT event_time, source_system, mechanism, batch_id, object_key, payload_bytes, landing_status, mission_id FROM reporting.stream_events ORDER BY event_time DESC LIMIT 50"
+        }
+      ]
+    }
+  ]
+}

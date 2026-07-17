@@ -32,4 +32,10 @@ Stop:
 | Grafana `:33000` | Renders the four Mission BI dashboards with real graphs |
 | Seed | Generated from `bi_metrics.yaml` + last `ingest-to-grafana` report snapshot |
 
-Assurance: **G-001 Local portfolio UI** — not Cloud-Integration Trino/oauthPassThru.
+## Live streaming (integrated-source assumption)
+
+```powershell
+.\scripts\run-data-stream.ps1
+```
+
+Opens **Live Enterprise Stream (Local)** and prints CDC events to the console while Grafana graphs update every 2s.

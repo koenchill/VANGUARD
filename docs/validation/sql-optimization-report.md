@@ -1,10 +1,10 @@
 # SQL Optimization Report (Local)
 
-Generated: `2026-07-17T00:31:18.280969+00:00`
+Generated: `2026-07-17T00:41:47.935512+00:00`
 
 **Overall:** PASS — G-001 Local SQL optimization lab (Postgres mart stand-in) — not cloud Trino
 
-Rows in `reporting.metric_series`: **5255**
+Rows in `reporting.metric_series`: **5480**
 
 ## Indexes applied
 
@@ -16,6 +16,7 @@ Rows in `reporting.metric_series`: **5255**
 | Query | Expect index | Index scan | Seq scan | Gate |
 |-------|--------------|------------|----------|------|
 | `bi_dashboard_filtered` | True | True | False | PASS |
+| `bi_dashboard_hot_metric` | False | False | True | PASS |
 | `bi_dashboard_unfiltered` | False | False | True | PASS |
 | `mart_view_filtered` | True | True | False | PASS |
 | `latest_stat` | True | True | False | PASS |
@@ -30,14 +31,14 @@ Rows in `reporting.metric_series`: **5255**
 ### Filtered query plan preview
 
 ```
-QUERY PLAN                                                                        
----------------------------------------------------------------------------------------------------------------------------------------------------------
- Index Scan using metric_series_metric_id_time_idx on metric_series  (cost=0.28..429.65 rows=4843 width=16) (actual time=0.027..0.856 rows=5015 loops=1)
-   Index Cond: (metric_id = 'records_processed_per_day'::text)
-   Filter: (dashboard_id = 'curation_health'::text)
-   Buffers: shared hit=134
- Planning:
-   Buffers: shared hit=138
+QUERY PLAN                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=67.60..67.69 rows=35 width=16) (actual time=0.113..0.117 rows=37 loops=1)
+   Sort Key: "time"
+   Sort Method: quicksort  Memory: 26kB
+   Buffers: shared hit=10
+   ->  Bitmap Heap Scan on metric_series  (cost=4.64..66.70 rows=35 width=16) (actual time=0.035..0.057 rows=37 loops=1)
+         Recheck Cond: ((dashboard_id = 'curation_health'::text) AND (metric_id = 'pii_scrub_rate'::text))
 ```
 
 ## Recommendations

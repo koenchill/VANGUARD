@@ -1,6 +1,6 @@
 # Section 14 Walkthrough Report (Local)
 
-Generated: `2026-07-16T22:52:42.958624+00:00`
+Generated: `2026-07-17T00:43:18.715186+00:00`
 
 **Overall:** PASS — Local evidence only (G-001).
 

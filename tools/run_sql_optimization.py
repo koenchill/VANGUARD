@@ -101,7 +101,19 @@ def _ensure_volume() -> None:
 QUERIES = [
     {
         "id": "bi_dashboard_filtered",
-        "label": "Grafana panel: filtered metric series (desired)",
+        "label": "Grafana panel: selective metric series (desired Index Scan)",
+        "sql": (
+            "SELECT time AS \"time\", value "
+            "FROM reporting.metric_series "
+            "WHERE dashboard_id = 'curation_health' "
+            "  AND metric_id = 'pii_scrub_rate' "
+            "ORDER BY 1"
+        ),
+        "expect_index": True,
+    },
+    {
+        "id": "bi_dashboard_hot_metric",
+        "label": "Hot streamed metric (may Seq Scan when selectivity is high — OK)",
         "sql": (
             "SELECT time AS \"time\", value "
             "FROM reporting.metric_series "
@@ -109,7 +121,8 @@ QUERIES = [
             "  AND metric_id = 'records_processed_per_day' "
             "ORDER BY 1"
         ),
-        "expect_index": True,
+        "expect_index": False,
+        "allow_seq_scan": True,
     },
     {
         "id": "bi_dashboard_unfiltered",

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-16T23:55:19.298853+00:00",
+  "generated_at": "2026-07-17T00:40:48.094328+00:00",
   "assurance_boundary": "G-001 portfolio Local mimic-prod \u2014 not Cloud-Integration / not ATO",
-  "code_version": "03744cd",
+  "code_version": "2f9c71f",
   "overall_passed": true,
   "stages": [
     {
@@ -14,7 +14,7 @@
       "stage": "pyramid-core",
       "passed": true,
       "skipped": false,
-      "detail": "85 passed in 13.31s"
+      "detail": "85 passed in 13.79s"
     },
     {
       "stage": "gateway",

@@ -47,8 +47,8 @@ if ($KeepGateway) { $mimicArgs += "--keep-gateway" }
 Write-Host "# smoke: $Py tools/run_mimic_prod.py $($mimicArgs -join ' ') gateway_port=$GatewayPort"
 & $Py tools/run_mimic_prod.py @mimicArgs
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "# smoke: PASS — see docs/validation/mimic-prod-report.md"
+    Write-Host "# smoke: PASS - see docs/validation/mimic-prod-report.md"
 } else {
-    Write-Host "# smoke: FAIL — exit $LASTEXITCODE"
+    Write-Host "# smoke: FAIL - exit $LASTEXITCODE"
 }
 exit $LASTEXITCODE

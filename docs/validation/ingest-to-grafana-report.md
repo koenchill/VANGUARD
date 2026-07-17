@@ -1,6 +1,6 @@
 # Ingest → Grafana Local Report
 
-Generated: `2026-07-17T00:19:05.472108+00:00`
+Generated: `2026-07-17T00:38:34.248116+00:00`
 
 **Overall:** PASS — G-001 portfolio Local ingest→Grafana contract — not Cloud-Integration / not ATO
 

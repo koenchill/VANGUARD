@@ -1,0 +1,17 @@
+apiVersion: 1
+datasources:
+- name: MissionBI-Local
+  uid: MissionBI-Local
+  type: postgres
+  access: proxy
+  url: postgres:5432
+  user: vanguard
+  secureJsonData:
+    password: vanguard
+  jsonData:
+    database: mission_marts
+    sslmode: disable
+    postgresVersion: 1600
+    timescaledb: false
+  isDefault: true
+  editable: false

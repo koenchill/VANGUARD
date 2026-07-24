@@ -43,10 +43,8 @@ resource "aws_eks_cluster" "this" {
     subnet_ids              = var.subnet_ids
     security_group_ids      = [aws_security_group.cluster.id]
     endpoint_private_access = var.endpoint_private_access
-    endpoint_public_access  = var.endpoint_public_access
-    # Hardcoded TEST-NET CIDR (RFC 5737) — never 0.0.0.0/0. Replace for real operator networks.
-    # Kept as a literal so Trivy/Checkov static analysis cannot infer the AWS world-open default (AVD-AWS-0041).
-    public_access_cidrs = ["203.0.113.0/24"]
+    # Portfolio freeze / AVD-AWS-0041: private API only (no public CIDR surface).
+    endpoint_public_access  = false
   }
 
   # AVD-AWS-0039 — encrypt Kubernetes secrets at rest with customer-managed KMS.
@@ -61,6 +59,10 @@ resource "aws_eks_cluster" "this" {
   tags                      = local.base_tags
 
   lifecycle {
+    precondition {
+      condition     = var.endpoint_public_access == false
+      error_message = "EKS public API endpoint must stay disabled (AVD-AWS-0041 / Zero Trust)."
+    }
     precondition {
       condition     = !contains(var.public_access_cidrs, "0.0.0.0/0")
       error_message = "EKS public_access_cidrs must not include 0.0.0.0/0."

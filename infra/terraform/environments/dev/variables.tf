@@ -54,8 +54,8 @@ variable "eks_endpoint_public_access" {
 
 variable "eks_public_access_cidrs" {
   type        = list(string)
-  description = "CIDRs allowed to reach the public EKS API. Empty when public endpoint is disabled. Must not include 0.0.0.0/0."
-  default     = []
+  description = "CIDRs allowed to reach the public EKS API. Must not include 0.0.0.0/0 (empty is treated as world-open by AWS)."
+  default     = ["203.0.113.0/24"]
 }
 
 variable "eks_enabled_cluster_log_types" {

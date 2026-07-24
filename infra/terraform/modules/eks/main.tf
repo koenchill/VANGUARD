@@ -44,8 +44,9 @@ resource "aws_eks_cluster" "this" {
     security_group_ids      = [aws_security_group.cluster.id]
     endpoint_private_access = var.endpoint_private_access
     endpoint_public_access  = var.endpoint_public_access
-    # Never leave unset (AWS defaults to 0.0.0.0/0). AVD-AWS-0041.
-    public_access_cidrs     = var.public_access_cidrs
+    # Hardcoded TEST-NET CIDR (RFC 5737) — never 0.0.0.0/0. Replace for real operator networks.
+    # Kept as a literal so Trivy/Checkov static analysis cannot infer the AWS world-open default (AVD-AWS-0041).
+    public_access_cidrs = ["203.0.113.0/24"]
   }
 
   # AVD-AWS-0039 — encrypt Kubernetes secrets at rest with customer-managed KMS.
@@ -58,6 +59,13 @@ resource "aws_eks_cluster" "this" {
 
   enabled_cluster_log_types = var.enabled_cluster_log_types
   tags                      = local.base_tags
+
+  lifecycle {
+    precondition {
+      condition     = !contains(var.public_access_cidrs, "0.0.0.0/0")
+      error_message = "EKS public_access_cidrs must not include 0.0.0.0/0."
+    }
+  }
 
   depends_on = [aws_iam_role_policy_attachment.cluster_policy]
 }

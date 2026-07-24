@@ -44,6 +44,16 @@ resource "aws_eks_cluster" "this" {
     security_group_ids      = [aws_security_group.cluster.id]
     endpoint_private_access = var.endpoint_private_access
     endpoint_public_access  = var.endpoint_public_access
+    # Never leave unset (AWS defaults to 0.0.0.0/0). AVD-AWS-0041.
+    public_access_cidrs     = var.public_access_cidrs
+  }
+
+  # AVD-AWS-0039 — encrypt Kubernetes secrets at rest with customer-managed KMS.
+  encryption_config {
+    provider {
+      key_arn = var.kms_key_arn
+    }
+    resources = ["secrets"]
   }
 
   enabled_cluster_log_types = var.enabled_cluster_log_types

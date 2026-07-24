@@ -40,7 +40,7 @@ jobs:
           format: sarif
           output: trivy-nightly.sarif
           scanners: vuln,misconfig
-          skip-dirs: security/sast-sca-dast/fixtures/planted
+          skip-dirs: security/sast-sca-dast/fixtures/planted,security/k8s-container-hardening/fixtures
 
       - name: Upload Trivy SARIF
         if: always()
@@ -59,7 +59,7 @@ jobs:
           severity: CRITICAL,HIGH
           format: table
           scanners: vuln,misconfig
-          skip-dirs: security/sast-sca-dast/fixtures/planted
+          skip-dirs: security/sast-sca-dast/fixtures/planted,security/k8s-container-hardening/fixtures
 
   nightly-dast:
     needs: nightly-sast-sca

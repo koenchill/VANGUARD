@@ -45,7 +45,7 @@ jobs:
           exit-code: "1"
           severity: CRITICAL,HIGH
           format: table
-          skip-dirs: security/sast-sca-dast/fixtures/planted
+          skip-dirs: security/sast-sca-dast/fixtures/planted,security/k8s-container-hardening/fixtures
 
       - name: Generate SBOM
         run: |

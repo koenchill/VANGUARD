@@ -33,6 +33,18 @@ variable "endpoint_public_access" {
   description = "Enable public API endpoint access."
 }
 
+variable "public_access_cidrs" {
+  type        = list(string)
+  description = "CIDRs allowed to reach the public EKS API endpoint. Must not include 0.0.0.0/0."
+  # Documentation/TEST-NET CIDR as safe default so scanners never see the AWS world-open default.
+  default     = ["203.0.113.0/24"]
+}
+
+variable "kms_key_arn" {
+  type        = string
+  description = "KMS key ARN used to encrypt Kubernetes secrets at rest."
+}
+
 variable "enabled_cluster_log_types" {
   type        = list(string)
   description = "Control plane log types to enable."

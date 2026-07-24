@@ -26,6 +26,17 @@ resource "aws_instance" "gateway" {
   vpc_security_group_ids = [aws_security_group.gateway[0].id]
   key_name               = var.key_name
 
+  # AVD-AWS-0028 — require IMDSv2 tokens.
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  # AVD-AWS-0131 — encrypt root volume.
+  root_block_device {
+    encrypted = true
+  }
+
   # Stateful licensed install — not disposable compute (G-003).
   user_data = <<-EOT
     <powershell>

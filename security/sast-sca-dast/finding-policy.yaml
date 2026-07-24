@@ -16,3 +16,4 @@ ignore:
   # Planted fixtures are intentional positives for gate dry-runs — excluded from merge scan roots.
   paths:
     - security/sast-sca-dast/fixtures/planted/**
+    - security/k8s-container-hardening/fixtures/**

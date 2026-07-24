@@ -43,6 +43,8 @@ module "eks" {
   cluster_name                = var.eks_cluster_name
   endpoint_private_access     = var.eks_endpoint_private_access
   endpoint_public_access      = var.eks_endpoint_public_access
+  public_access_cidrs         = var.eks_public_access_cidrs
+  kms_key_arn                 = var.kms_key_arn
   enabled_cluster_log_types   = var.eks_enabled_cluster_log_types
   cluster_policy_arn          = var.eks_cluster_policy_arn
   tags                        = local.common_tags

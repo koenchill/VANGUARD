@@ -52,6 +52,12 @@ variable "eks_endpoint_public_access" {
   type = bool
 }
 
+variable "eks_public_access_cidrs" {
+  type        = list(string)
+  description = "CIDRs allowed to reach the public EKS API. Empty when public endpoint is disabled. Must not include 0.0.0.0/0."
+  default     = []
+}
+
 variable "eks_enabled_cluster_log_types" {
   type = list(string)
 }

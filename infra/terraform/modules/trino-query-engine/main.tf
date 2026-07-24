@@ -49,6 +49,20 @@ resource "aws_launch_template" "worker" {
 
   vpc_security_group_ids = concat([aws_security_group.trino.id], var.trino_security_group_ids)
 
+  # AVD-AWS-0130 — require IMDSv2 on launch template instances.
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  # AVD-AWS-0131 — encrypt root volume.
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      encrypted = true
+    }
+  }
+
   user_data = base64encode(<<-EOT
     #!/bin/bash
     echo "TRINO_ROLE=worker" >> /etc/trino/role.env
@@ -91,6 +105,17 @@ resource "aws_instance" "coordinator" {
   instance_type          = var.coordinator_instance_type
   subnet_id              = var.subnet_ids[0]
   vpc_security_group_ids = concat([aws_security_group.trino.id], var.trino_security_group_ids)
+
+  # AVD-AWS-0028 — require IMDSv2 tokens.
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  # AVD-AWS-0131 — encrypt root volume.
+  root_block_device {
+    encrypted = true
+  }
 
   user_data = <<-EOT
     #!/bin/bash

@@ -81,6 +81,8 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/pgbouncer
+            - name: tmp
+              mountPath: /tmp
           resources:
             requests:
               cpu: 100m
@@ -91,10 +93,13 @@ spec:
           securityContext:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
       volumes:
         - name: config
           configMap:
             name: pgbouncer-config
+        - name: tmp
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

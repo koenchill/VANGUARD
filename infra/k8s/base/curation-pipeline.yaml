@@ -36,7 +36,10 @@ spec:
           runAsNonRoot: true
           runAsUser: 8888
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
         resources:
           requests:
             cpu: 4000m
@@ -53,3 +56,6 @@ spec:
         - python
         - -m
         - app.data_pipelines
+      volumes:
+      - name: tmp
+        emptyDir: {}

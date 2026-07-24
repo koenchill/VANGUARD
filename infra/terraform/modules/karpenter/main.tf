@@ -91,6 +91,8 @@ resource "aws_iam_instance_profile" "node" {
 resource "aws_sqs_queue" "interruption" {
   name                      = var.interruption_queue_name
   message_retention_seconds = 300
+  # AVD-AWS-0096 — encrypt interruption queue at rest (SSE-SQS).
+  sqs_managed_sse_enabled   = true
   tags                      = local.base_tags
 }
 
